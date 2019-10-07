@@ -102,3 +102,5 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+reading/books/(Adaptive Computation and Machine Learning) Bernhard Schlkopf, Alexander J. Smola - Learning with Kernels_ Support Vector Machines, Regularization, Optimization, and Beyond-The MIT Press (2001).pdf
