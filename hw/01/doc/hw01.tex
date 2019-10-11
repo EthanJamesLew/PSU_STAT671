@@ -1,0 +1,151 @@
+\documentclass{article}[12pt]
+
+% useful packages
+\usepackage{fullpage}
+\usepackage{amsmath,amssymb,amsthm,amsfonts}
+\usepackage{graphicx}
+\usepackage{enumerate}
+\usepackage{algorithm,algorithmic}
+\usepackage{xcolor}
+\usepackage{bbm}
+\usepackage{url}
+\usepackage{caption,subcaption}
+
+% theorem type environments
+\newtheorem{thm}{Theorem}
+\newtheorem{prop}{Proposition}
+\newtheorem{lemma}{Lemma}
+\newtheorem{cor}{Corollary}
+\newtheorem{defn}{Definition}
+\newtheorem{assump}{Assumption}
+\newtheorem{example}{Example}
+\newtheorem{conjecture}{Conjecture}
+
+% frequently used symbols
+\newcommand{\bE}{\mathbb{E}}
+\newcommand{\bP}{\mathbb{P}}
+\newcommand{\bQ}{\mathbb{Q}}
+\newcommand{\bR}{\mathbb{R}}
+\newcommand{\bS}{\mathbb{S}}
+\newcommand{\bN}{\mathbb{N}}
+\newcommand{\bZ}{\mathbb{Z}}
+\newcommand{\sC}{{\mathcal C}} 
+\newcommand{\sD}{{\mathcal D}} 
+\newcommand{\sE}{{\mathcal E}} 
+\newcommand{\sF}{{\mathcal F}} 
+\newcommand{\sL}{{\mathcal L}} 
+\newcommand{\sH}{{\mathcal H}} 
+\newcommand{\sN}{{\mathcal N}} 
+\newcommand{\sO}{{\mathcal O}} 
+\newcommand{\sP}{{\mathcal P}} 
+\newcommand{\sR}{{\mathcal R}} 
+\newcommand{\sS}{{\mathcal S}}
+\newcommand{\sU}{{\mathcal U}} 
+\newcommand{\sX}{{\mathcal X}} 
+\newcommand{\sY}{{\mathcal Y}} 
+\newcommand{\sZ}{{\mathcal Z}}
+
+% operators
+\newcommand{\sign}{\mathop{\mathrm{sign}}}
+\newcommand{\supp}{\mathop{\mathrm{supp}}} % support
+\newcommand{\argmin}{\operatornamewithlimits{arg\ min}}
+\newcommand{\argmax}{\operatornamewithlimits{arg\ max}}
+\newcommand{\dist}{\operatorname{dist}}
+\newcommand{\tr}{\text{tr}}
+\newcommand{\vecop}{\text{vec}}
+\newcommand{\st}{\operatorname{s.t.}}
+\newcommand{\cut}{\setminus}
+\newcommand{\ra}{\rightarrow}
+\newcommand{\ind}[1]{\mathbbm{1}\left\{#1\right\}} 
+\newcommand{\given}{\ | \ }
+
+% grouping operators
+\newcommand{\brac}[1]{\left[#1\right]}
+\newcommand{\set}[1]{\left\{#1\right\}}
+\newcommand{\abs}[1]{\left\lvert #1 \right\rvert}
+\newcommand{\paren}[1]{\left(#1\right)}
+\newcommand{\norm}[1]{\left\|#1\right\|}
+\newcommand{\ip}[2]{\left\langle #1,#2 \right\rangle}
+
+% code commands
+\newcommand{\matlab}{\textsc{Matlab }}
+\newcommand{\algname}[1]{\textnormal{\textsc{#1}}}
+
+% header command
+\newcommand{\homework}[4]{
+    \pagestyle{myheadings}
+    \thispagestyle{plain}
+    \newpage
+    \setcounter{page}{1}
+    \setlength{\headsep}{10mm}
+    \noindent
+    \begin{center}
+    \framebox{
+        \vbox{\vspace{2mm}
+            \hbox to 6.28in { {\bf STAT 671: Statistical Learning I
+            \hfill Fall 2019} }
+        \vspace{4mm}
+        \hbox to 6.28in { {\Large \hfill Homework #1 \hfill} }
+        \vspace{2mm}
+        \hbox to 6.28in { \Large \hfill Due: #2 \hfill }
+        \vspace{2mm}
+        \hbox to 6.28in { {\it Student Name: #3} \hfill {\it Professor Name: #4}}
+        \vspace{2mm}}
+   }
+   \end{center}
+   \markboth{Homework #1}{Homework #1}
+   \vspace*{4mm}
+}
+
+\begin{document}
+
+\homework{1}{October 14, 2019}{Ethan Lew}{Bruno Jedynak}
+
+\section{A Simple Classifier}
+
+Given a set of observations associated with labels, $(x,y) \in \sX \times \{ \pm 1\}$, a binary classifier, $f : \sX \ra \{\pm 1 \}$, can be defined with two steps
+ 
+ \begin{enumerate}
+\item Create a function $h: \sX  \ra \bR$ .
+\item Threshold: choose $u \in \bR$,
+
+\begin{equation}
+g(x) = \left\{\begin{array}{c}{1 \text { if } f(x) \geq u} \\ {-1 \text { if } f(x)<u}\end{array}\right..
+\end{equation}
+ \end{enumerate}
+ 
+ Begin by computing the means of the two classes in feature space,
+ 
+ \begin{equation}
+ \mathbf{c}_{+}=\frac{1}{m_{+}} \sum_{\left\{i | y_{i}=+1\right\}} \mathbf{x}_{i}
+ \end{equation}
+
+\begin{equation}
+\mathbf{c}_{-}=\frac{1}{m_{-}} \sum_{\left\{i | y_{i}=-1\right\}} \mathbf{x}_{i}
+\end{equation}
+
+A point on the boundary between the positive and negative labels is assumed to lie of the midpoint of the line between $\mathbf{c}_+$ and $\mathbf{c}_-$, $\mathbf{c}=\left(\mathbf{c}_{+}+\mathbf{c}_{-}\right) / 2$ . Further, the boundary is assumed to be orthogonal to the vector $\mathbf{w}=\mathbf{c}_{+}-\mathbf{c}_{-}$. Accordingly, a classifier function can be defined as,
+
+\begin{equation}
+\begin{aligned}
+y &=\operatorname{sgn}\left\langle\left(\mathbf{x}-\left(\mathbf{c}_{+}+\mathbf{c}_{-}\right) / 2\right),\left(\mathbf{c}_{+}-\mathbf{c}_{-}\right)\right\rangle \\
+&= \operatorname{sgn}\left(\left\langle\mathbf{x}, \mathbf{c}_{+}\right\rangle-\left\langle\mathbf{x}, \mathbf{c}_{-}\right\rangle+  \frac{1}{2} \left\langle \mathbf{c}_-, \mathbf{c}_{-}\right\rangle - \frac{1}{2} \left\langle \mathbf{c}_+, \mathbf{c}_{+}\right\rangle  \right)
+\end{aligned}
+\end{equation}
+
+If a kernel, $k: \sH \times \sH \ra \bR$ is replaced by the inner product,
+
+\begin{equation}
+y=\operatorname{sgn}\left(\frac{1}{m_{+}} \sum_{\left\{i | y_{i}=+1\right\}} k\left(x, x_{i}\right)-\frac{1}{m_{-}} \sum_{\left\{i | y_{i}=-1\right\}} k\left(x, x_{i}\right)+b\right),
+\end{equation}
+
+where
+
+\begin{equation}
+b =\frac{1}{2}\left(\frac{1}{m_{-}^{2}} \sum_{\left\{(i, j) | y_{i}=y,=-1\right\}} k\left(x_{i}, x_{j}\right)-\frac{1}{m_{+}^{2}} \sum_{\left\{(i, j) | y_{i}=y_{i}=+1\right\}} k\left(x_{i}, x_{j}\right)\right).
+\end{equation}
+
+
+
+
+\end{document}
