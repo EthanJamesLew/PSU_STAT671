@@ -62,6 +62,10 @@ class Classifier:
         self.cn = np.mean(self.X[idxn], axis=0)
         self.cp = np.mean(self.X[idxp], axis=0)
 
+        # compute b
+        self.b = 0.5*(np.linalg.norm(self.cn)**2 - np.linalg.norm(self.cp)**2)
+
+
     def classify_kernel(self, x):
         ''' classify
         given an observation x, predict the label
@@ -76,36 +80,26 @@ class Classifier:
 
         for xi, yi in zip(self.X, self.Y):
             if yi == 1:
-                g += 1 / self.mp * np.dot(x, xi)
+                g += 1 / self.mp * self.k(x, xi)
             else:
-                g -= 1 / self.mn * np.dot(x, xi)
+                g -= 1 / self.mn * self.k(x, xi)
 
-        for xi in Xp:
-            for xj in Xp:
-                g -= 1 / (2 * self.mp ** 2) * np.dot(xi, xj)
+        g += self.b
 
-        for xi in Xn:
-            for xj in Xn:
-                g += 1 / (2 * self.mn ** 2) * np.dot(xi, xj)
-
-        return np.sign(g)
+        return int(np.sign(g))
 
     def classify(self, x):
         return int(np.sign(np.dot(self.cp - self.cn, x - self.c)))
 
 
-
-@jit(nopython=True)
 def k_polynomial(x, xp, d):
     return np.dot(x, xp)**d
 
 
-@jit(nopython=True)
 def k_gaussian(x, xp, sigma):
-    return np.exp(-np.linalg.norm(x-xp)**2/(2*sigma**2))
+    return np.exp(-np.linalg.norm(x-xp)**2/(2*(sigma**2)))
 
 
-@jit(nopython=True)
 def k_sigmoid(x, xp, kappa, Theta):
     return np.tanh(kappa * np.dot(x, xp) + Theta)
 
@@ -136,19 +130,27 @@ if __name__ == '__main__':
 
 
     # Get the two species to classify
-    test1_df = iris_df.loc[iris_df['species'] != 0]
+    test1_df = iris_df.loc[iris_df['species'] != 2]
 
     # Get training and validation sets
     train1_df, ver1_df = partition_df(test1_df, 0.8)
 
     iris_classifier = Classifier(4)
-    #iris_classifier.k = lambda x,xp: np.dot(x, xp)
+    iris_classifier.k = lambda x, xp: np.dot(x, xp)
 
     iris_classifier.train(np.array(train1_df)[:, :-1], np.array(train1_df)[:, -1] * 2 - 1)
 
     val  = np.array([iris_classifier.classify_kernel(x) for x in np.array(ver1_df)[:, :-1]])
+
+    valt= (np.array(ver1_df, dtype=np.int)[:, -1] )
+    unique = list(set(valt))
+    valt[valt == max(unique)] = 1
+    valt[valt == min(unique)] = -1
+
+    Remp = 1.0/len(val) * np.sum(1/2*np.abs(val - valt))
+    print(Remp)
     print(val)
-    print(np.array(ver1_df, dtype=np.int)[:, -1]*2-1 )
+    print(valt)
 
     D = np.array(test1_df)[:, :-1]
     y = np.array(test1_df)[:, -1]
