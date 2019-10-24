@@ -1,0 +1,306 @@
+\documentclass{article}[12pt]
+
+% useful packages
+\usepackage{fullpage}
+\usepackage{amsmath,amssymb,amsthm,amsfonts}
+\usepackage{graphicx}
+\usepackage{enumerate}
+\usepackage{algorithm,algorithmic}
+\usepackage{xcolor}
+\usepackage{bbm}
+\usepackage{url}
+\usepackage{caption,subcaption}
+
+% theorem type environments
+\newtheorem{thm}{Theorem}
+\newtheorem{prop}{Proposition}
+\newtheorem{lemma}{Lemma}
+\newtheorem{cor}{Corollary}
+\newtheorem{defn}{Definition}
+\newtheorem{assump}{Assumption}
+\newtheorem{example}{Example}
+\newtheorem{conjecture}{Conjecture}
+
+% frequently used symbols
+\newcommand{\bE}{\mathbb{E}}
+\newcommand{\bP}{\mathbb{P}}
+\newcommand{\bQ}{\mathbb{Q}}
+\newcommand{\bR}{\mathbb{R}}
+\newcommand{\bS}{\mathbb{S}}
+\newcommand{\bN}{\mathbb{N}}
+\newcommand{\bZ}{\mathbb{Z}}
+\newcommand{\sC}{{\mathcal C}} 
+\newcommand{\sD}{{\mathcal D}} 
+\newcommand{\sE}{{\mathcal E}} 
+\newcommand{\sF}{{\mathcal F}} 
+\newcommand{\sL}{{\mathcal L}} 
+\newcommand{\sH}{{\mathcal H}} 
+\newcommand{\sN}{{\mathcal N}} 
+\newcommand{\sO}{{\mathcal O}} 
+\newcommand{\sP}{{\mathcal P}} 
+\newcommand{\sR}{{\mathcal R}} 
+\newcommand{\sS}{{\mathcal S}}
+\newcommand{\sU}{{\mathcal U}} 
+\newcommand{\sX}{{\mathcal X}} 
+\newcommand{\sY}{{\mathcal Y}} 
+\newcommand{\sZ}{{\mathcal Z}}
+
+% operators
+\newcommand{\sign}{\mathop{\mathrm{sign}}}
+\newcommand{\supp}{\mathop{\mathrm{supp}}} % support
+\newcommand{\argmin}{\operatornamewithlimits{arg\ min}}
+\newcommand{\argmax}{\operatornamewithlimits{arg\ max}}
+\newcommand{\dist}{\operatorname{dist}}
+\newcommand{\tr}{\text{tr}}
+\newcommand{\vecop}{\text{vec}}
+\newcommand{\st}{\operatorname{s.t.}}
+\newcommand{\cut}{\setminus}
+\newcommand{\ra}{\rightarrow}
+\newcommand{\ind}[1]{\mathbbm{1}\left\{#1\right\}} 
+\newcommand{\given}{\ | \ }
+
+% grouping operators
+\newcommand{\brac}[1]{\left[#1\right]}
+\newcommand{\set}[1]{\left\{#1\right\}}
+\newcommand{\abs}[1]{\left\lvert #1 \right\rvert}
+\newcommand{\paren}[1]{\left(#1\right)}
+\newcommand{\norm}[1]{\left\|#1\right\|}
+\newcommand{\ip}[2]{\left\langle #1,#2 \right\rangle}
+
+% code commands
+\newcommand{\matlab}{\textsc{Matlab }}
+\newcommand{\algname}[1]{\textnormal{\textsc{#1}}}
+
+% header command
+\newcommand{\homework}[4]{
+    \pagestyle{myheadings}
+    \thispagestyle{plain}
+    \newpage
+    \setcounter{page}{1}
+    \setlength{\headsep}{10mm}
+    \noindent
+    \begin{center}
+    \framebox{
+        \vbox{\vspace{2mm}
+            \hbox to 6.28in { {\bf STAT 671: Statistical Learning I
+            \hfill Fall 2019} }
+        \vspace{4mm}
+        \hbox to 6.28in { {\Large \hfill Homework #1 \hfill} }
+        \vspace{2mm}
+        \hbox to 6.28in { \Large \hfill Due: #2 \hfill }
+        \vspace{2mm}
+        \hbox to 6.28in { {\it Student Name: #3} \hfill {\it Professor Name: #4}}
+        \vspace{2mm}}
+   }
+   \end{center}
+   \markboth{Homework #1}{Homework #1}
+   \vspace*{4mm}
+}
+
+\begin{document}
+
+\homework{2}{October 28, 2019}{Ethan Lew}{Dr. Bruno Jedynak}
+
+\section{Kernels}
+\begin{enumerate}
+\item Let $(x,y) \in \mathbb{R}^+ \times \mathbb{R}^+$, where $\mathbb{R}^+=\{x \in \mathbb{R};x \geq 0\}$, the ``french positive\rq\rq{} real numbers. 
+\begin{enumerate}
+\item 
+Verify that 
+$$\min(x,y) = \int_0^\infty \mathbb{I}_{t\leq x} \mathbb{I}_{t\leq y} dt$$
+where  
+$$\mathbb{I}_A =  \left\{
+\begin{tabular}{ll}
+1 & \mbox{ if A is true}\\
+0 & \mbox{otherwise}
+\end{tabular}
+\right.
+$$ 
+
+The $\operatorname{min}$ function can be expressed as the piecewise defined function,
+\begin{equation}
+\operatorname{min}(x,y)=\left\{\begin{array}{ll}{x} & {x \le y} \\ {y} & {x > y}\end{array}\right. .
+\end{equation}
+Evaluate the integral over both intervals. For $x \le y$,
+\begin{equation}
+\begin{aligned}
+\int_{0}^{\infty} \mathbb{I}_{t \leq x} \mathbb{I}_{t \leq y} d t &= \int_{0}^{x}  d t \\
+&= x .
+\end{aligned}
+\end{equation}
+For $x > y$,
+\begin{equation}
+\begin{aligned}
+\int_{0}^{\infty} \mathbb{I}_{t \leq x} \mathbb{I}_{t \leq y} d t &= \int_{0}^{y}  d t \\
+&= y .
+\end{aligned}
+\end{equation}
+Thus, the equivalence holds.
+
+
+\item Use the previous question to show that $K(x,y)=\min(x,y)$ is a pd kernel over $\mathbb{R}^+$.
+
+%\begin{defn}{\textbf{Reproducing Kernel Hilbert Space}}
+%Let $\mathcal X$ be a nonempty set and by $\mathcal H$ a Hilbert space of functions $f: \mathcal X \rightarrow \mathbb R$. Then $\mathcal H$ is called a reproducing kernel Hilbert space endowed with the inner product $\langle.,.\rangle$ if there exists $k: \mathcal X \times \mathcal X \rightarrow \mathbb R$ with the following properties.
+%\begin{enumerate}
+%\item $k$ has the property 
+%\begin{equation}
+%\langle f, k(x, .) \rangle = f(x), \forall f \in \mathcal H.
+%\end{equation}
+%\item $k$ spans $\mathcal H$.
+%\end{enumerate}
+%\end{defn}
+
+\begin{thm}{\textbf{Aronzsajn's Theorem}}
+$k$ is a positive definite kernel on the set of $\mathcal X$ if and only if there exists a Hilbert space $\mathcal H$ and a mapping
+\begin{equation}
+\phi: \mathcal X \rightarrow \mathcal H,
+\end{equation}
+such that, for any $x, x' \in \mathcal X$:
+\begin{equation}
+k(x, x') = \langle \phi(x), \phi(x') \rangle_{\mathcal H}.
+\end{equation}
+\label{thm:aron}
+\end{thm}
+
+Consider the function $\phi:\mathbb R^+ \rightarrow \mathcal H$,  where $\mathcal H$ is a Hilbert space,
+\begin{equation}
+\mathcal H = \{f_x(t) = \mathbb{I}_{t \le x} | x \in \mathbb R^+\},
+\end{equation}
+endowed with inner product,
+\begin{equation}
+\langle f_x(t), f_y(t) \rangle = \int_{0}^{\infty}f_x(t)  f_y(t) d t.
+\end{equation}
+From the previous problem,
+\begin{equation}
+\langle f_x(t), f_y(t) \rangle = \operatorname{min}(x,y).
+\end{equation}
+By Theorem \ref{thm:aron}, $\text{min}(x,y)$ is the inner product of a reproducing kernel Hilbert space, meaning that can also be a positive definite kernel.
+
+
+\item Show that $\max(x,y)$ is not a pd kernel over  $\mathbb{R}^+$. 
+
+\begin{defn}{\textbf{Positive Definite Kernel}}
+A kernel $k : \mathcal X \times \mathcal X \rightarrow \mathbb R$ is said to be positive definite if for any sequence $a_1,a_2,...,a_m \in \mathbb R$ and $x_1, x_2,...,x_m \in \mathcal X$,
+\begin{equation}
+\sum_{i=1}^{m} \sum_{i=1}^{m} a_i a_j k(x_i, x_j) \ge 0.
+\end{equation}
+\label{def:pd}
+\end{defn}
+
+Consider the sequence $a_1=1, a_2=-1$ and $x_1=0, x_2=1$,
+\begin{equation}
+\sum_{i=1}^{2} \sum_{i=1}^{2} a_i a_j k(x_i, x_j) = 0 -1 -1 + 1 = -1 \not \ge 0.
+\end{equation}
+From Definition \ref{def:pd}, the function $\text{max}(x,y)$ fails the condition, and is not positive definite.
+\end{enumerate}
+\item Consider a probability space $(\Omega,\mathcal{A},P)$
+\begin{enumerate}
+\item Define for any two events $A$ and $B$, 
+$$K_1(A,B)=P(A \cap B)$$
+where $A \cap B$ is the intersection between the events A and B 
+Verify that $K_1$ is positive definite. Hint: $P(A)=E[\mathbb{I}_A]$
+
+First acknowledge that,
+\begin{equation}
+\mathbb I _{A \cap B} = \mathbb{I}_A \mathbb{I}_B.
+\end{equation}
+Consequently, 
+\begin{equation}\label{equ:event}
+\begin{aligned} 
+\mathbb E \left[ \mathbb I_{A \cap B} \right] &= \mathbb E \left[ \mathbb I_{A} \mathbb I_{B} \right]\\
+&= \int_0^\infty \mathbb I_{A} \mathbb I_{B} f(t)
+ dt. \end{aligned}
+\end{equation}
+Thus, for some density function, $f(t)$, the following Hilbert space $\mathcal H$ can be constructed,
+\begin{equation}
+\mathcal H_f = \left\{g_A = \mathbb I_A \sqrt{f} : A \in \mathcal A \right\},
+\end{equation}
+endowed with an inner product
+\begin{equation}
+\langle g_A, g_B\rangle = \int_{-\infty}^{\infty} g_A(t) g_B (t) dt.
+\end{equation}
+This is equivalent to Equation \ref{equ:event}. By Theorem \ref{thm:aron}, the kernel function is positive definite.
+
+
+\item Define for any two events $A$ and $B$, 
+$$K_2(A,B)=P(A \cap B)-P(A)P(B)$$
+Verify that $K_2$ is positive definite. 
+
+
+\end{enumerate}
+\end{enumerate}
+\section{Kernels and RKHS}
+\begin{enumerate}
+\item Define the RKHS  over $\mathbb{R}^d$
+$$K(x,y)=x^Ty+c$$
+where $c>0$. 
+\begin{enumerate}
+\item
+What is the RKHS associated with the kernel $K$? no proof is required. 
+\item 
+What is the inner product in this RKHS? no proof required.  
+\item 
+Verify the reproducing property
+\end{enumerate}
+\item Define the RKHS  over $\mathbb{R}^d$
+$$K(x,y)=(x^Ty)^2$$
+where $c>0$. 
+The RKHS associated with the kernel $K$ is $\{f_S;f_S(x)=x^T S x\}$ where $S$ is a symmetric $(d,d)$ matrix. The inner product is
+$$<f_{S_1},f_{S_2}>=<S_1,S_2>_F$$
+\begin{enumerate}
+\item
+Verify the reproducing property. 
+\item 
+Why do we require that $S$ is symmetric?
+\end{enumerate}
+\item Define the RKHS  over $\mathbb{R}^d$
+$$K(x,y)=(x^Ty+c)^2$$
+where $c>0$. 
+\begin{enumerate}
+\item
+What is the RKHS associated with the kernel $K$? no proof is required. 
+\item 
+What is the inner product in this RKHS? no proof required.  
+\item 
+Verify the reproducing property
+\end{enumerate}
+\end{enumerate}
+\section{Fisher kernel} 
+Let\footnote{If you are not familiar with probabilistic models, do not panic! come to see me.} $\theta \in \mathbb{R}$ be a parameter and let $p_\theta$ be a probabilistic model (i.e a point mass function or a density) over a set $\mathcal{X}$ indexed by $\theta$. Let $\theta_0 \in \mathbb{R}$ be a specific value for $\theta$.
+
+Let us define the Fisher score at $x \in \mathcal{X}$ as
+\begin{equation}
+\phi(x,\theta_0) = \frac{\delta}{\delta \theta} \ln p_\theta(x) \mbox{ evaluated at } \theta=\theta_0
+\end{equation}
+assuming that this quantity exists. 
+
+Define $I(\theta)$, the Fisher information associated with the parameter $\theta$, i.e., 
+\begin{equation}
+I(\theta)=E[\phi^2(X,\theta)]
+\end{equation}
+where $E$ stands for expectation and $X$ is a random variable with distribution $p_\theta$. 
+
+The Fisher kernel is then 
+\begin{equation}
+k(x,x')=\frac{\phi(x,\theta_0)\phi(x',\theta_0)}{I(\theta_0)}
+\end{equation}
+where 
+\begin{enumerate}
+\item Verify that $k(.,.)$ is a positive definite kernel over $\mathcal{X}$
+\item Consider the following model: $x \in \{0,1\}$, $X \sim Bernoulli(\theta)$, $0 < \theta < 1$, that is
+\begin{equation}
+p_\theta(x)=\theta^x(1-\theta)^{(1-x)} 
+\end{equation}
+We recall that in this case $E[X]=\theta$ and $Var[X]=E[(X-\theta)^2]=\theta(1-\theta)$
+
+Compute $k(x,x')$
+
+Hint: you will find $$k(x,x')=\frac{(x-\theta_0)(x'-\theta_0)}{\theta_0(1-\theta_0)}$$
+\item
+Assume now $x=(x_1,x_2)$ with $x_1 \in \{0,1\}$ and $x_2 \in \{0,1\}$. 
+We consider the following model where $X=(X_1,X_2)$, $X_1$ and $X_2$ are independent with the same $Bernoulli(\theta)$ distribution. 
+Compute $k(x,x')$. 
+\end{enumerate}
+ 
+\end{document}
