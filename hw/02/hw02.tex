@@ -140,16 +140,6 @@ Thus, the equivalence holds.
 
 \item Use the previous question to show that $K(x,y)=\min(x,y)$ is a pd kernel over $\mathbb{R}^+$.
 
-%\begin{defn}{\textbf{Reproducing Kernel Hilbert Space}}
-%Let $\mathcal X$ be a nonempty set and by $\mathcal H$ a Hilbert space of functions $f: \mathcal X \rightarrow \mathbb R$. Then $\mathcal H$ is called a reproducing kernel Hilbert space endowed with the inner product $\langle.,.\rangle$ if there exists $k: \mathcal X \times \mathcal X \rightarrow \mathbb R$ with the following properties.
-%\begin{enumerate}
-%\item $k$ has the property 
-%\begin{equation}
-%\langle f, k(x, .) \rangle = f(x), \forall f \in \mathcal H.
-%\end{equation}
-%\item $k$ spans $\mathcal H$.
-%\end{enumerate}
-%\end{defn}
 
 \begin{thm}{\textbf{Aronzsajn's Theorem}}
 $k$ is a positive definite kernel on the set of $\mathcal X$ if and only if there exists a Hilbert space $\mathcal H$ and a mapping
@@ -231,6 +221,18 @@ Verify that $K_2$ is positive definite.
 \end{enumerate}
 \end{enumerate}
 \section{Kernels and RKHS}
+
+\begin{defn}{\textbf{Reproducing Kernel Hilbert Space}}
+Let $\mathcal X$ be a nonempty set and by $\mathcal H$ a Hilbert space of functions $f: \mathcal X \rightarrow \mathbb R$. Then $\mathcal H$ is called a reproducing kernel Hilbert space endowed with the inner product $\langle.,.\rangle$ if there exists $k: \mathcal X \times \mathcal X \rightarrow \mathbb R$ with the following properties.
+\begin{enumerate}
+\item $k$ has the property 
+\begin{equation}
+\langle f, k(x, .) \rangle = f(x), \forall f \in \mathcal H.
+\end{equation}
+\item $k$ spans $\mathcal H$.
+\end{enumerate}
+\end{defn}
+
 \begin{enumerate}
 \item Define the RKHS  over $\mathbb{R}^d$
 $$K(x,y)=x^Ty+c$$
@@ -247,12 +249,58 @@ Verify the reproducing property
 $$K(x,y)=(x^Ty)^2$$
 where $c>0$. 
 The RKHS associated with the kernel $K$ is $\{f_S;f_S(x)=x^T S x\}$ where $S$ is a symmetric $(d,d)$ matrix. The inner product is
-$$<f_{S_1},f_{S_2}>=<S_1,S_2>_F$$
+\begin{equation} \label{equ:frob}
+<f_{S_1},f_{S_2}>=<S_1,S_2>_F
+\end{equation}
 \begin{enumerate}
 \item
 Verify the reproducing property. 
+
+To verify the reproducing property, it is required to show that
+\begin{equation}
+\langle f_S, K(x, .)\rangle= f_S(x), \forall f_S \in \mathcal{H}.
+\end{equation}
+Re-express $K$ into the form,
+\begin{equation}
+\begin{aligned} K(x, y)&=\left(x^{T} y\right)^{2} \\ 
+&= \left(x^{T} y\right) \left(x^{T} y\right)\\
+&= \left(x^{T} y\right)^T \left(x^{T} y\right) \\
+&= y^Txx^Ty .\\
+ \end{aligned}
+\end{equation}
+Is is evident that $x x^T$ is a symmetric matrix in $\mathbb R^{d \times d}$, as  $x x^T =\left(x x^T\right)^T$. Thus,
+\begin{equation}\label{equ:ks}
+\begin{aligned} K(x, y)&= y^T S_x y,
+ \end{aligned}
+\end{equation}
+such that $S_x = x x^T$. Now, using Equation \ref{equ:frob}, evaluate the LHS of the reproducing property equation,
+\begin{equation}
+\begin{aligned}
+\left\langle f_{S}, K(x, .)\right\rangle&= \langle S, S_x \rangle_F \\
+&= \operatorname{tr}\left( S S_x \right)\\
+&= \operatorname{tr}\left( Sx x^T \right).
+\end{aligned}
+\end{equation}
+Now, evaluate the RHS of the reproducing property equation,
+\begin{equation}
+\begin{aligned}
+f_{S}(x)&=x^{T} S x \\
+&=\operatorname{tr}\left( S x x^T \right).
+\end{aligned}
+\end{equation}
+Thus, the reproducing property holds.
+
+
+
 \item 
 Why do we require that $S$ is symmetric?
+
+In order for the proposed set of functions and kernel to be a RKHS, it is required that the reproducing property and that $K$ spans $\mathcal H$,
+\begin{equation}
+\mathcal{Y}=\operatorname{span}\{K(x, \cdot) | x \in \mathcal{X}\}.
+\end{equation}
+It was shown in Equation \ref{equ:ks} that $S_x = S_x^T$, so the kernel can only span the space $\mathcal H$ is the matrix $S$ is symmetric.
+
 \end{enumerate}
 \item Define the RKHS  over $\mathbb{R}^d$
 $$K(x,y)=(x^Ty+c)^2$$
