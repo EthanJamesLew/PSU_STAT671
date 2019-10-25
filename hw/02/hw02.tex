@@ -240,10 +240,26 @@ where $c>0$.
 \begin{enumerate}
 \item
 What is the RKHS associated with the kernel $K$? no proof is required. 
+\begin{equation}
+\mathcal{H}=\left\{f_{v, v_{0}} ; f_{v, v_{0}}(x)=v^{T} x+\frac{v_{0}}{c} \middle| v \in \mathbb R^d, v_0 \in \mathbb R \right\}.
+\end{equation}
 \item 
 What is the inner product in this RKHS? no proof required.  
+\begin{equation}
+\langle f_{v, v_0}, f_{w, w_0}\rangle = v^T w+\frac{v_0 w_0}{c}.
+\end{equation}
 \item 
 Verify the reproducing property
+
+To verify the reproducing property, it is required to show that
+\begin{equation} \label{equ:repro}
+\left\langle f_{v,v_0}, K(x, .)\right\rangle, \forall f_{v,v_0} \in \mathcal{H}.
+\end{equation}
+\begin{equation}
+\begin{aligned}\left\langle f_{v,v_0}, K(x, .)\right\rangle &= v^Tx+\frac{c v+0}{c} \\
+&= v^Tx+v_0 \\
+&=f(x).\end{aligned}
+\end{equation}
 \end{enumerate}
 \item Define the RKHS  over $\mathbb{R}^d$
 $$K(x,y)=(x^Ty)^2$$
@@ -257,7 +273,7 @@ The RKHS associated with the kernel $K$ is $\{f_S;f_S(x)=x^T S x\}$ where $S$ is
 Verify the reproducing property. 
 
 To verify the reproducing property, it is required to show that
-\begin{equation}
+\begin{equation} \label{equ:repro}
 \langle f_S, K(x, .)\rangle= f_S(x), \forall f_S \in \mathcal{H}.
 \end{equation}
 Re-express $K$ into the form,
@@ -273,7 +289,7 @@ Is is evident that $x x^T$ is a symmetric matrix in $\mathbb R^{d \times d}$, as
 \begin{aligned} K(x, y)&= y^T S_x y,
  \end{aligned}
 \end{equation}
-such that $S_x = x x^T$. Now, using Equation \ref{equ:frob}, evaluate the LHS of the reproducing property equation,
+such that $S_x = x x^T$. Now, using Equation \ref{equ:frob}, evaluate the LHS of the reproducing property Equation \ref{equ:repro},
 \begin{equation}
 \begin{aligned}
 \left\langle f_{S}, K(x, .)\right\rangle&= \langle S, S_x \rangle_F \\
@@ -297,7 +313,7 @@ Why do we require that $S$ is symmetric?
 
 In order for the proposed set of functions and kernel to be a RKHS, it is required that the reproducing property and that $K$ spans $\mathcal H$,
 \begin{equation}
-\mathcal{Y}=\operatorname{span}\{K(x, \cdot) | x \in \mathcal{X}\}.
+\mathcal{H}=\operatorname{span}\{K(x, \cdot) | x \in \mathcal{X}\}.
 \end{equation}
 It was shown in Equation \ref{equ:ks} that $S_x = S_x^T$, so the kernel can only span the space $\mathcal H$ is the matrix $S$ is symmetric.
 
