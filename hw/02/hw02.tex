@@ -336,16 +336,28 @@ K(x, y)&=\left(x^{T} y+c\right)^{2} \\
 
 A RKHS guess would be,
 \begin{equation}
-\mathcal{H}=\left\{f_{S,v, v_{0}} ; f_{v, v_{0}}(x)= x^TSx+v^{T} x+\frac{v_{0}}{c} | S = S^T \in \mathbb R^{d\times d}, v \in \mathbb{R}^{d}, v_{0} \in \mathbb{R}\right\}
+\mathcal{H}=\left\{f_{S,v, v_{0}} ; f_{v, v_{0}}(x)= x^TSx+2c \left(v^{T} x+\frac{v_{0}}{c} \right) | S = S^T \in \mathbb R^{d\times d}, v \in \mathbb{R}^{d}, v_{0} \in \mathbb{R}\right\}
 \end{equation}
 \item 
 What is the inner product in this RKHS? no proof required.  
 \begin{equation}
-\langle f_{S_1, v, v_0}, f_{S_2, w, w_0} \rangle = \langle S_1, S_2 \rangle_F + 2c \left( v^T w + \frac{2v_0w_0}{c}\right).
+\langle f_{S_1, v, v_0}, f_{S_2, w, w_0} \rangle = \langle S_1, S_2 \rangle_F + 2c \left( v^T w + \frac{2v_0w_0}{c^3}\right).
 \end{equation}
 \item 
 Verify the reproducing property
 \end{enumerate}
+Note that
+\begin{equation}
+K(x, y) = y^TS_x y+2c \left( x^Ty + \frac{c}{2}\right) = f_{S_x,x,c^2/2}.
+\end{equation}
+
+Now, evaluate the inner product,
+\begin{equation}
+\begin{aligned}\left\langle f_{S, v, v_{0}}, K(\cdot , x)\right\rangle &=\left\langle f_{S, v, v_{0}}, f_{S_{x}, x, c^{2} / 2}\right\rangle \\ &= x^{T} S x+2 c\left(v^{T} x+2 \frac{c^{2} v_{0}}{2 c^{3}}\right) \\ 
+&= x^{T} S x+2 c\left(v^{T} x+\frac{ v_{0}}{c}\right) \\
+&= f_{S, v, v_0}(x). \end{aligned}
+\end{equation}
+Hence, the reproducing property holds.
 \end{enumerate}
 \section{Fisher kernel} 
 Let\footnote{If you are not familiar with probabilistic models, do not panic! come to see me.} $\theta \in \mathbb{R}$ be a parameter and let $p_\theta$ be a probabilistic model (i.e a point mass function or a density) over a set $\mathcal{X}$ indexed by $\theta$. Let $\theta_0 \in \mathbb{R}$ be a specific value for $\theta$.
