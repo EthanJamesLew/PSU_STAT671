@@ -101,6 +101,39 @@
 
 \homework{2}{October 28, 2019}{Ethan Lew}{Dr. Bruno Jedynak}
 
+\section{Preliminaries}
+\begin{defn}{\textbf{Positive Definite Kernel}}
+A kernel $k : \mathcal X \times \mathcal X \rightarrow \mathbb R$ is said to be positive definite if for any sequence $a_1,a_2,...,a_m \in \mathbb R$ and $x_1, x_2,...,x_m \in \mathcal X$,
+\begin{equation}
+\sum_{i=1}^{m} \sum_{i=1}^{m} a_i a_j k(x_i, x_j) \ge 0.
+\end{equation}
+\label{def:pd}
+\end{defn}
+
+\begin{defn}{\textbf{Reproducing Kernel Hilbert Space}}
+Let $\mathcal X$ be a nonempty set and by $\mathcal H$ a Hilbert space of functions $f: \mathcal X \rightarrow \mathbb R$. Then $\mathcal H$ is called a reproducing kernel Hilbert space endowed with the inner product $\langle.,.\rangle$ if there exists $k: \mathcal X \times \mathcal X \rightarrow \mathbb R$ with the following properties.
+\begin{enumerate}
+\item $k$ has the property 
+\begin{equation}
+\langle f, k(x, .) \rangle = f(x), \forall f \in \mathcal H.
+\end{equation}
+\item $k$ spans $\mathcal H$.
+\end{enumerate}
+\end{defn}
+
+
+\begin{thm}{\textbf{Aronzsajn's Theorem}}
+$k$ is a positive definite kernel on the set of $\mathcal X$ if and only if there exists a Hilbert space $\mathcal H$ and a mapping
+\begin{equation}
+\phi: \mathcal X \rightarrow \mathcal H,
+\end{equation}
+such that, for any $x, x' \in \mathcal X$:
+\begin{equation}
+k(x, x') = \langle \phi(x), \phi(x') \rangle_{\mathcal H}.
+\end{equation}
+\label{thm:aron}
+\end{thm}
+
 \section{Kernels}
 \begin{enumerate}
 \item Let $(x,y) \in \mathbb{R}^+ \times \mathbb{R}^+$, where $\mathbb{R}^+=\{x \in \mathbb{R};x \geq 0\}$, the ``french positive\rq\rq{} real numbers. 
@@ -141,18 +174,6 @@ Thus, the equivalence holds.
 \item Use the previous question to show that $K(x,y)=\min(x,y)$ is a pd kernel over $\mathbb{R}^+$.
 
 
-\begin{thm}{\textbf{Aronzsajn's Theorem}}
-$k$ is a positive definite kernel on the set of $\mathcal X$ if and only if there exists a Hilbert space $\mathcal H$ and a mapping
-\begin{equation}
-\phi: \mathcal X \rightarrow \mathcal H,
-\end{equation}
-such that, for any $x, x' \in \mathcal X$:
-\begin{equation}
-k(x, x') = \langle \phi(x), \phi(x') \rangle_{\mathcal H}.
-\end{equation}
-\label{thm:aron}
-\end{thm}
-
 Consider the function $\phi:\mathbb R^+ \rightarrow \mathcal H$,  where $\mathcal H$ is a Hilbert space,
 \begin{equation}
 \mathcal H = \{f_x(t) = \mathbb{I}_{t \le x} | x \in \mathbb R^+\},
@@ -170,13 +191,6 @@ By Theorem \ref{thm:aron}, $\text{min}(x,y)$ is the inner product of a reproduci
 
 \item Show that $\max(x,y)$ is not a pd kernel over  $\mathbb{R}^+$. 
 
-\begin{defn}{\textbf{Positive Definite Kernel}}
-A kernel $k : \mathcal X \times \mathcal X \rightarrow \mathbb R$ is said to be positive definite if for any sequence $a_1,a_2,...,a_m \in \mathbb R$ and $x_1, x_2,...,x_m \in \mathcal X$,
-\begin{equation}
-\sum_{i=1}^{m} \sum_{i=1}^{m} a_i a_j k(x_i, x_j) \ge 0.
-\end{equation}
-\label{def:pd}
-\end{defn}
 
 Consider the sequence $a_1=1, a_2=-1$ and $x_1=0, x_2=1$,
 \begin{equation}
@@ -238,17 +252,6 @@ and by Theorem \ref{thm:aron}, the kernel $K_2$ is positive definite.
 \end{enumerate}
 \end{enumerate}
 \section{Kernels and RKHS}
-
-\begin{defn}{\textbf{Reproducing Kernel Hilbert Space}}
-Let $\mathcal X$ be a nonempty set and by $\mathcal H$ a Hilbert space of functions $f: \mathcal X \rightarrow \mathbb R$. Then $\mathcal H$ is called a reproducing kernel Hilbert space endowed with the inner product $\langle.,.\rangle$ if there exists $k: \mathcal X \times \mathcal X \rightarrow \mathbb R$ with the following properties.
-\begin{enumerate}
-\item $k$ has the property 
-\begin{equation}
-\langle f, k(x, .) \rangle = f(x), \forall f \in \mathcal H.
-\end{equation}
-\item $k$ spans $\mathcal H$.
-\end{enumerate}
-\end{defn}
 
 \begin{enumerate}
 \item Define the RKHS  over $\mathbb{R}^d$
@@ -397,6 +400,17 @@ k(x,x')=\frac{\phi(x,\theta_0)\phi(x',\theta_0)}{I(\theta_0)}
 where 
 \begin{enumerate}
 \item Verify that $k(.,.)$ is a positive definite kernel over $\mathcal{X}$
+
+Recognize that the Fisher information is non-negative,
+\begin{equation}
+I(\theta_0)=E\left[\phi^{2}(X, \theta_0)\right] \ge 0.
+\end{equation}
+Accordingly, it is sufficient to show that the numerator is positive definite,
+\begin{equation}
+k'\left(x, x^{\prime}\right)=\phi\left(x, \theta_{0}\right) \phi\left(x^{\prime}, \theta_{0}\right) = \langle\phi\left(x, \theta_{0}\right), \phi\left(x^{\prime}, \theta_{0}\right) \rangle.
+\end{equation}
+By Theorem \ref{thm:aron}, it is evident that $k'$ is positive definite, meaning that $k$ is positive definite as well.
+
 \item Consider the following model: $x \in \{0,1\}$, $X \sim Bernoulli(\theta)$, $0 < \theta < 1$, that is
 \begin{equation}
 p_\theta(x)=\theta^x(1-\theta)^{(1-x)} 
@@ -446,6 +460,47 @@ k\left(x, x^{\prime}\right)&=\frac{\phi\left(x, \theta_{0}\right) \phi\left(x^{\
 Assume now $x=(x_1,x_2)$ with $x_1 \in \{0,1\}$ and $x_2 \in \{0,1\}$. 
 We consider the following model where $X=(X_1,X_2)$, $X_1$ and $X_2$ are independent with the same $Bernoulli(\theta)$ distribution. 
 Compute $k(x,x')$. 
+
+
+Given a random vector, $\mathbf x$, the Fisher score can be described by,
+\begin{equation}
+\Phi_{\theta_{0}}(\mathbf{x})=\left.\nabla_{\theta} \log P_{\theta}(\mathbf{x})\right|_{\theta=\theta_{0}}.
+\end{equation}
+Using independence,
+\begin{equation}
+\begin{aligned}
+\Phi_{\theta_{0}}(\mathbf{x})=\left.\nabla_{\theta} \log P_{\theta}(\mathbf{x})\right|_{\theta=\theta_{0}} &= \left.\nabla_{\theta} \log P_{\theta}(X_1 =x_1, X_2=x_2)\right|_{\theta=\theta_{0}} \\
+&= \left.\nabla_{\theta} \log P_{\theta}(x_1) P_{\theta}(x_2)\right|_{\theta=\theta_{0}} \\
+&=\left.  \nabla_{\theta} \left( \log P_{\theta}(x_1)  + \log P_{\theta}(x_2) \right)\right|_{\theta=\theta_{0}}\\
+&=\Phi_{\theta_{0}}(x_1)+ \Phi_{\theta_{0}}(x_2).
+\end{aligned}
+\end{equation}
+Evaluate the Fisher information,
+\begin{equation}
+\begin{aligned}
+I(\theta)&=E\left[\phi^{2}(\mathbf X, \theta)\right] \\
+&= E \left[ \right( \Phi_{\theta_{\mathrm{o}}}\left(x_{1}\right)+\Phi_{\theta_{\mathrm{o}}}\left(x_{2}\right) \left)^2 \right] \\
+&= E\left[ \Phi_{\theta_{\mathrm{o}}}\left(x_{1}\right)^2  \right] +  E\left[ \Phi_{\theta_{\mathrm{o}}}\left(x_{2}\right)^2  \right] + 2  E\left[ \Phi_{\theta_{\mathrm{o}}}\left(x_{1}\right)   \Phi_{\theta_{\mathrm{o}}}\left(x_{2}\right)   \right].
+\end{aligned}
+\end{equation}
+From the previous problem and the Bernoulli distribution properties,
+\begin{equation}
+\begin{aligned}
+I(\theta)&= \frac{2}{\left(\theta_0 \left( 1- \theta_0 \right)\right)} + 2 \text{Cov}\left[ X_1, X_2\right].
+\end{aligned}
+\end{equation}
+Due to independence,
+\begin{equation}
+\begin{aligned}
+I(\theta)&= \frac{2}{\left(\theta_0 \left( 1- \theta_0 \right)\right)} .
+\end{aligned}
+\end{equation}
+So, by substitution,
+\begin{equation}
+k\left(x, x^{\prime}\right) = \frac{{{{\left( {x - 2{\theta _0}} \right)}^T}\left( {x' - 2{\theta _0}} \right)}}{{2{\theta _0}\left( {1 - {\theta _0}} \right)}}.
+\end{equation}
+
+
 \end{enumerate}
  
 \end{document}
