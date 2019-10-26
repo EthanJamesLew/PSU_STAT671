@@ -217,6 +217,23 @@ This is equivalent to Equation \ref{equ:event}. By Theorem \ref{thm:aron}, the k
 $$K_2(A,B)=P(A \cap B)-P(A)P(B)$$
 Verify that $K_2$ is positive definite. 
 
+Consider a function $\phi_A$,
+\begin{equation}
+\phi_A (t) =  \mathbb I_A - P(A).
+\end{equation}
+Evaluate the inner product,
+\begin{equation}
+\langle \mathbb{I}_{A}-P(A), \mathbb{I}_{B}-P(B) \rangle = \langle \mathbb{I}_{A}, \mathbb{I}_{B} \rangle -  \langle \mathbb{I}_{A}, P(B) \rangle -  \langle \mathbb P(A), \mathbb{I}_{B} \rangle +  P(A) P(B).
+\end{equation}
+From the hint,
+\begin{equation}
+\langle \mathbb{I}_{A}, P(B) \rangle =\left\langle\mathbb{P}(A), \mathbb{I}_{B}\right\rangle=  P(A) P(B).
+\end{equation}
+Thus,
+\begin{equation}
+K_2(A, B) = \left\langle\mathbb{I}_{A}-P(A), \mathbb{I}_{B}-P(B)\right\rangle,
+\end{equation}
+and by Theorem \ref{thm:aron}, the kernel $K_2$ is positive definite.
 
 \end{enumerate}
 \end{enumerate}
