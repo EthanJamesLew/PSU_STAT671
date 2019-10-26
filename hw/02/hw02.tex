@@ -373,7 +373,6 @@ Define $I(\theta)$, the Fisher information associated with the parameter $\theta
 I(\theta)=E[\phi^2(X,\theta)]
 \end{equation}
 where $E$ stands for expectation and $X$ is a random variable with distribution $p_\theta$. 
-
 The Fisher kernel is then 
 \begin{equation}
 k(x,x')=\frac{\phi(x,\theta_0)\phi(x',\theta_0)}{I(\theta_0)}
@@ -390,6 +389,42 @@ We recall that in this case $E[X]=\theta$ and $Var[X]=E[(X-\theta)^2]=\theta(1-\
 Compute $k(x,x')$
 
 Hint: you will find $$k(x,x')=\frac{(x-\theta_0)(x'-\theta_0)}{\theta_0(1-\theta_0)}$$
+
+Simplify $\phi(x, \theta)$,
+\begin{equation}
+\begin{aligned}
+\frac{\partial }{\partial \theta} \ln \left(\theta^{x}(1-\theta)^{(1-x)} \right) &= \frac{\partial }{\partial \theta} \left( \ln \theta^x + \ln \left( \left( 1- \theta \right)^{1-x}\right)\right)  \\
+&= \frac{\partial }{\partial \theta} \left( x\ln \theta + \left( 1- x \right)\ln \left(  1- \theta \right)\right) \\
+&= \frac{x}{\theta} - \frac{1-x}{1-\theta} \\
+&= \frac{x-\theta}{\theta(1-\theta)}.
+\end{aligned}
+\end{equation}
+Allowing $\theta=\theta_0$,
+\begin{equation}
+\phi\left(x, \theta_{0}\right) = \frac{x-\theta_0}{\theta_0 \left( 1- \theta_0 \right)}.
+\end{equation}
+
+Utilize the known Bernoulli statistics to simplify the Fisher information,
+\begin{equation}
+\begin{aligned} I(\theta)&=E\left[\phi^{2}(X, \theta)\right] \\
+&= E \left[ \frac{(X-\theta)^2}{(\theta(1-\theta))^2} \right] \\
+&= \frac{1}{(\theta(1-\theta))^2} \text{Var}[X].
+\end{aligned}
+\end{equation} 
+Accordingly, the Fisher information is,
+\begin{equation}
+ I(\theta_0)=\frac{1}{\theta_0(1-\theta_0)}.
+\end{equation}
+
+Finally, 
+\begin{equation}
+\begin{aligned}
+k\left(x, x^{\prime}\right)&=\frac{\phi\left(x, \theta_{0}\right) \phi\left(x^{\prime}, \theta_{0}\right)}{I\left(\theta_{0}\right)} \\
+&= \frac{x-\theta_0}{\theta_0 (1-\theta_0)} \frac{x'-\theta_0}{\theta_0 (1-\theta_0)} \theta_0 (1-\theta_0) \\
+&= \frac{\left( x-\theta_0\right) \left( x'-\theta_0\right)}{\theta_0 (1-\theta_0)}.
+\end{aligned}
+\end{equation}
+
 \item
 Assume now $x=(x_1,x_2)$ with $x_1 \in \{0,1\}$ and $x_2 \in \{0,1\}$. 
 We consider the following model where $X=(X_1,X_2)$, $X_1$ and $X_2$ are independent with the same $Bernoulli(\theta)$ distribution. 
