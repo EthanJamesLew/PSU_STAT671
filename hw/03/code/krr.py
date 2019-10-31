@@ -8,8 +8,7 @@ Implements Kernel Ridge Regression
 '''
 import numpy as np
 from inspect import signature
-from label_data import LabeledData, PartitionData
-
+from label_data import LabelData, PartitionData
 
 def kernel_mat(f, x):
     n = len(x)
@@ -21,12 +20,20 @@ def kernel_mat(f, x):
             K[j, i] = v
     return K
 
+def lstsq(A, b):
+    AA = A.T @ A
+    bA = b @ A
+    D, U = np.linalg.eigh(AA)
+    Ap = (U * np.sqrt(D)).T
+    bp = bA @ U / np.sqrt(D)
+    return np.linalg.lstsq(Ap, bp, rcond=None)
 
 def alpha(data, k, l):
     n = data.n
     K = kernel_mat(k, data.x)
     G = K + l*n*np.eye(n)
-    return np.linalg.pinv(G) @ data.y
+    return lstsq(G, data.y)[0]
+    #return np.linalg.pinv(G) @ data.y
 
 
 def krr(data, alpha, k, x):
@@ -69,7 +76,14 @@ class KernelRidgeRegression:
         self._alpha = alpha(self._data, self._k, self._l)
 
     def __call__(self, x):
-        return krr(self._data, self._alpha, self._k, x)
+        if type(x) is float:
+            return krr(self._data, self._alpha, self._k, x)
+        else:
+            m = x.shape[0]
+            ans = np.zeros((m))
+            for idx, xi in enumerate(x):
+                ans[idx] = krr(self._data, self._alpha, self._k, xi)
+            return ans
 
 
 if __name__ == '__main__':
@@ -77,7 +91,7 @@ if __name__ == '__main__':
     print(kernel_mat(np.dot, [1,2,3]))
     data = np.array([[2], [1], [7], [9]])
     labs = np.array([0.4, 1.2, 3.4, -0.4])
-    ld = LabeledData()
+    ld = LabelData()
     ld.add_data(data, labs)
 
     a = alpha(ld, np.dot, 0.01)

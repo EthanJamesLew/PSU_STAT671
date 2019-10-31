@@ -43,10 +43,10 @@ class Data:
         return self._X[i]
 
 
-class LabeledData(Data):
+class LabelData(Data):
     def __init__(self):
         self._Y = None
-        super(LabeledData, self).__init__()
+        super(LabelData, self).__init__()
 
     @property
     def y(self):
@@ -91,10 +91,13 @@ class PartitionData():
     def validation(self):
         return self._datav
 
+    def __getitem__(self, i):
+        return self._data[i]
+
 if __name__ == "__main__":
     data = np.array([[2,3],[1,2],[7,8],[9,3]])
     labs = np.array([0.4, 1.2, 3.4, -0.4])
-    d = LabeledData()
+    d = LabelData()
     d.add_data(data, labs)
     p = PartitionData(d)
     p.partition(0.2)
