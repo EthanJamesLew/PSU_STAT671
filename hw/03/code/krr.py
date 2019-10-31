@@ -10,6 +10,7 @@ import numpy as np
 from inspect import signature
 from label_data import LabelData, PartitionData
 
+
 def kernel_mat(f, x):
     n = len(x)
     K = np.zeros((n, n))
@@ -32,7 +33,7 @@ def alpha(data, k, l):
     n = data.n
     K = kernel_mat(k, data.x)
     G = K + l*n*np.eye(n)
-    return lstsq(G, data.y)[0]
+    return np.linalg.solve(G, data.y)
     #return np.linalg.pinv(G) @ data.y
 
 

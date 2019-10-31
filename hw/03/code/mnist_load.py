@@ -15,7 +15,7 @@ def load_mnist_data(s0, s1, ratio, usage):
 
 
 
-    M = round(np.shape(X)[0] * usage)
+    M = int(round(np.shape(X)[0] * usage))
     use = np.zeros(np.shape(X)[0], dtype=np.bool)
     use[0:M] = 1.0
     np.random.shuffle(use)
