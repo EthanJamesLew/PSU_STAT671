@@ -105,6 +105,19 @@
 \begin{enumerate}
 \item Code the kernalized ridge regression for the 2d data that you already used for the simple classifier and the perceptron. Show your code. Note that an example code for 1d data is available in the folder \lq\lq{}code\rq\rq{} in d2l.   Show 3 examples of results obtain with simulated data in 2 dimensions, using 3 different kernels. 
 
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.7\textwidth]{./img/krr_k.eps}
+\caption{Kernalized Ridge Regression  for 3 Kernels (1D)}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{./img/krr_k2.eps}
+\caption{Kernalized Ridge Regression  for 3 Kernels (2D)}
+\end{figure}
+
+
 \item Import the MNIST dataset. It is available on D2L. A R file is available for reading the files and run a simple classifier.  You will find online similar code in case you use Python,  Matlab or other high level language. 
 
 Code a version of the kernalized ridge regression algorithm that let you run the algorithm for various sets of images from the MNIST dataset such that you can perform controled experiments. The input of the algorithm could be a list of filenames, corresponding to images for training, testing, as well as the corresponding labels.  
@@ -131,7 +144,7 @@ Run the kernelized ridge regression for one digit versus another one of your cho
 
 \end{table}
 
-\begin{table}
+\begin{table}[h]
 \centering
 \begin{tabular}{|c||c|c|c|c|c|c|c|c|c|} \hline
 \multicolumn{10}{|c|}{Classification Error Between Digits for $m=228$ ($\%$)} \\ \hline
