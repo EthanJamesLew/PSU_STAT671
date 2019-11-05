@@ -101,6 +101,42 @@
 
 \homework{3}{November 6, 2019}{Ethan Lew}{Dr. Bruno Jedynak}
 
+\section*{Preliminaries}
+\begin{defn}{\textbf{Positive Definite Kernel}}
+A kernel $k : \mathcal X \times \mathcal X \rightarrow \mathbb R$ is said to be positive definite if for any sequence $a_1,a_2,...,a_m \in \mathbb R$ and $x_1, x_2,...,x_m \in \mathcal X$,
+\begin{equation}
+\sum_{i=1}^{m} \sum_{i=1}^{m} a_i a_j k(x_i, x_j) \ge 0.
+\end{equation}
+\label{def:pd}
+\end{defn}
+
+\begin{defn}{\textbf{Reproducing Kernel Hilbert Space}}
+Let $\mathcal X$ be a nonempty set and by $\mathcal H$ a Hilbert space of functions $f: \mathcal X \rightarrow \mathbb R$. Then $\mathcal H$ is called a reproducing kernel Hilbert space endowed with the inner product $\langle.,.\rangle$ if there exists $k: \mathcal X \times \mathcal X \rightarrow \mathbb R$ with the following properties.
+\begin{enumerate}
+\item $k$ has the property 
+\begin{equation}
+\langle f, k(x, .) \rangle = f(x), \forall f \in \mathcal H.
+\end{equation}
+\item $k$ spans $\mathcal H$.
+\end{enumerate}
+\end{defn}
+
+\begin{thm}{\textbf{Representer Theorem}}
+Let $\mathcal X$ be a set endowed with a PD kernel $K$, $\mathcal H$ the corresponding RKHS, and $\mathcal{S}=\left\{\mathrm{x}_{1}, \cdots, \mathrm{x}_{n}\right\} \subseteq \mathcal{X}$ a finite set of points in $\mathcal X$. Let $\Psi: \mathbb{R}^{n+1} \rightarrow \mathbb{R}$ be a function of $n+1$ variables, strictly increasing with respect to the last variable.Then, any solution to the optimization problem,
+\begin{equation}
+\min _{f \in \mathcal{H}} \Psi\left(f\left(\mathbf{x}_{1}\right), \cdots, f\left(\mathbf{x}_{n}\right),\|f\|_{\mathcal{H}}\right),
+\end{equation}
+admits the form,
+\begin{equation}
+\forall \mathbf{x} \in \mathcal{X}, \quad f(\mathbf{x})=\sum_{i=1}^{n} \alpha_{i} K\left(\mathbf{x}_{i}, \mathbf{x}\right)=\sum_{i=1}^{n} \alpha_{i} K_{\mathbf{x}_{i}}(\mathbf{x}).
+\end{equation}
+In other words, the solution lives in the finite-dimensional subspace:
+\begin{equation}
+f \in \operatorname{Span}\left(K_{\mathrm{x}_{1}}, \ldots, K_{\mathrm{x}_{n}}\right).
+\end{equation}
+
+\end{thm}
+
 \section{Kernalized ridge regression}
 \begin{enumerate}
 \item Code the kernalized ridge regression for the 2d data that you already used for the simple classifier and the perceptron. Show your code. Note that an example code for 1d data is available in the folder \lq\lq{}code\rq\rq{} in d2l.   Show 3 examples of results obtain with simulated data in 2 dimensions, using 3 different kernels. 
