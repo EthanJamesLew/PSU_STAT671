@@ -93,14 +93,14 @@ def classify_test(s0, s1, usage, ratio, k):
     t0 = time.time()
     y_v = kregr(mnist.validation[0])
     y_v[y_v > 0.5] = 1
-    y_v[y_v < 0.5] = 0
+    y_v[y_v < 0.5] = -1
     t1 = time.time()
     vtotal = t1 - t0
 
     t0 = time.time()
     y_t = kregr(mnist.training[0])
     y_t[y_t > 0.5] = 1
-    y_t[y_t < 0.5] = 0
+    y_t[y_t < 0.5] = -1
     t1 = time.time()
     rtotal = t1 - t0
 

@@ -107,6 +107,7 @@ A kernel $k : \mathcal X \times \mathcal X \rightarrow \mathbb R$ is said to be 
 \begin{equation}
 \sum_{i=1}^{m} \sum_{i=1}^{m} a_i a_j k(x_i, x_j) \ge 0.
 \end{equation}
+
 \label{def:pd}
 \end{defn}
 
@@ -121,7 +122,7 @@ Let $\mathcal X$ be a nonempty set and by $\mathcal H$ a Hilbert space of functi
 \end{enumerate}
 \end{defn}
 
-\begin{thm}{\textbf{Representer Theorem}}
+\begin{thm}{\textbf{Representer Theorem}} \label{thm:representer}
 Let $\mathcal X$ be a set endowed with a PD kernel $K$, $\mathcal H$ the corresponding RKHS, and $\mathcal{S}=\left\{\mathrm{x}_{1}, \cdots, \mathrm{x}_{n}\right\} \subseteq \mathcal{X}$ a finite set of points in $\mathcal X$. Let $\Psi: \mathbb{R}^{n+1} \rightarrow \mathbb{R}$ be a function of $n+1$ variables, strictly increasing with respect to the last variable.Then, any solution to the optimization problem,
 \begin{equation}
 \min _{f \in \mathcal{H}} \Psi\left(f\left(\mathbf{x}_{1}\right), \cdots, f\left(\mathbf{x}_{n}\right),\|f\|_{\mathcal{H}}\right),
@@ -134,7 +135,6 @@ In other words, the solution lives in the finite-dimensional subspace:
 \begin{equation}
 f \in \operatorname{Span}\left(K_{\mathrm{x}_{1}}, \ldots, K_{\mathrm{x}_{n}}\right).
 \end{equation}
-
 \end{thm}
 
 \section{Kernalized ridge regression}
@@ -229,6 +229,13 @@ Show that for any $\theta$, a function $g \in H$ that minimizes $J(\theta,g)$ ha
 g(.)=\sum_{i=1}^n \alpha_i k(x_i,.)
 \end{equation}
 where $\alpha \in \mathbb{R}^n$ 
+
+Theorem \ref{thm:representer} states that $g(.)$ has the form described if the functional has the arguments,
+\begin{equation}
+ J\left(g\left(\mathbf{x}_{1}\right), \cdots, g\left(\mathbf{x}_{n}\right),\|g\|_{\mathcal{H}}\right),
+\end{equation}
+and is strictly increasing with respect to the last variable. Thus, holding $\theta$, $\lambda$, $x_i$ and $y_i$ constant for any $i$, the function $g \in H$ that minimizes $J$ can be written in the form.
+ 
 \item 
 Show that 
 \begin{equation}
@@ -236,10 +243,75 @@ J(\sum_{i=1}^n \alpha_i k(x_i,.),\theta)=||y - X\theta - K\alpha||^2 + \lambda \
 \end{equation}
 for some matrix $K$ and $X$ which you will specify together with their dimensions. 
 \item Compute $\nabla_\alpha J$, the gradient of $J$ with respect to $\alpha$. Similarly, compute $\nabla_\theta J$, the gradient of $J$ with respect to $\theta$. 
+
+\begin{equation}
+\begin{aligned}
+\nabla_{\alpha} J &= \nabla_{\alpha} \left[ \|y-X \theta-K \alpha\|^{2}+\lambda \alpha^{T} K \alpha \right] \\
+&= 2 \left( -K^T \right)  \left( y-X \theta-K \alpha \right) + \lambda \left( 2K^T \right) \alpha \\
+&= 2K \left( -y + X \theta + K \alpha + \lambda \alpha \right).
+\end{aligned}
+\end{equation}
+
+\begin{equation}
+\begin{aligned}
+\nabla_{\theta} J &= \nabla_{\theta} \left[ \|y-X \theta-K \alpha\|^{2}+\lambda \alpha^{T} K \alpha \right] \\
+&= 2\left(-X^T \right) \left( y - X \theta - K \alpha\right) \\
+&= 2X^T\left( X\theta + K\alpha -y\right).
+\end{aligned}
+\end{equation}
+
 \item Assume that the matrix $X^TX$ is positive definite.
 Find one solution $(\alpha,\theta)$ of the system  $\nabla_\alpha J=0, \nabla_\theta J=0$.  
+
+Consider the system of equations,
+\begin{equation}
+\begin{cases}
+K \left( -y + X \theta + K \alpha + \lambda \alpha \right) = 0 \\
+X^T\left( X\theta + K\alpha -y\right) = 0
+\end{cases}
+\end{equation}
+Allowing the Moore-Penrose pseudoinverse to be defined as,
+\begin{equation}
+A^+ = (A^T A)^{-1} A^T,
+\end{equation}
+it is clear that,
+\begin{equation}
+\tilde{X} = X X^+.
+\end{equation}
+The Moore-Penrose pseudoinverse is the left sided inverse of $X$. This means that $\tilde X$ is a transformation that maps $\mathbb R^d$ onto the column space of $X$. Thus,
+\begin{equation}
+\alpha = (K - \tilde{X} K - \lambda \tilde{X})^+ (y- \tilde{X} y),
+\end{equation}
+meaning,
+\begin{equation}
+\theta = X^+ (y - K \alpha).
+\end{equation}
+
+
+
 \item 
 Write a code that demonstrate in one dimension the semi-parametric regression. Use the data in the file ``hmw3-data1.csv''. Show your code and one plot of a solution.  
+
+A quadratic polynomial model was created for the $X$ matrix, being
+\begin{equation}
+X = [x^2 | x | 1] \in \mathbb R^{d \times 3}.
+\end{equation}
+After the semiparametric regression was applied, the polynomial,
+\begin{equation}
+g(x) = -0.0337 x^2 - 0.0815 x - 0.3146,
+\end{equation}
+was found. The kernel,
+\begin{equation}
+k(x,y) = \text{min}(x,y),
+\end{equation}
+was chosen due to its piecewise linear nature.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.7\textwidth]{./img/semipara.eps}
+\caption{Semiparametric Regression. Using the equation derived in part 4, model parameters (green) and kernel regression (orange) was found for the data provided (black). The resulting fit is shown in blue.}
+\end{figure}
+
 \end{enumerate}
 
 \end{document}
