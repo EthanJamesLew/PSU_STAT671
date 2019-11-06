@@ -10,6 +10,8 @@
 \usepackage{bbm}
 \usepackage{url}
 \usepackage{caption,subcaption}
+\usepackage{listings}
+\usepackage[title]{appendix}
 
 % theorem type environments
 \newtheorem{thm}{Theorem}
@@ -143,16 +145,23 @@ f \in \operatorname{Span}\left(K_{\mathrm{x}_{1}}, \ldots, K_{\mathrm{x}_{n}}\ri
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.7\textwidth]{./img/krr_k.eps}
+\includegraphics[width=0.6\textwidth]{./img/krr_k.eps}
 \caption{Kernalized Ridge Regression  for 3 Kernels (1D)}
 \end{figure}
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.9\textwidth]{./img/krr_k2.eps}
-\caption{Kernalized Ridge Regression  for 3 Kernels (2D)}
+\includegraphics[width=0.73\textwidth]{./img/krr_k2.eps}
+\caption{Kernalized Ridge Regression for 3 Kernels (2D)}
 \end{figure}
 
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{./img/krr_k2c.eps}
+\caption{Kernalized Ridge Regression Classification  for 3 Kernels (2D)}
+\end{figure}
+
+See Appendix \ref{app:krr} for the Python source code.
 
 \item Import the MNIST dataset. It is available on D2L. A R file is available for reading the files and run a simple classifier.  You will find online similar code in case you use Python,  Matlab or other high level language. 
 
@@ -163,7 +172,7 @@ Run the kernelized ridge regression for one digit versus another one of your cho
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.7\textwidth]{./img/mnist_perf.eps}
-\caption{MNIST Kernalized Ridge Regression Performance}
+\caption{MNIST Kernalized Ridge Regression Performance (Number of Validation Images: 1000).}
 \end{figure}
 
 \begin{table}[h]
@@ -171,11 +180,11 @@ Run the kernelized ridge regression for one digit versus another one of your cho
 \begin{tabular}{|c|c|c|c|c|} \hline
 \multicolumn{5}{|c|}{Classification Between 0 and 1 Benchmark --- Intel Core i7-4790K} \\ \hline
  Training Size & Testing Size & Learning Time (s) & Testing Time (s) & Classification Error (\%) \\ \hline \hline
-  148 & 1330 & 0.062 & 0.934 & 1.01 \\ \hline
-  443 & 1035 & 0.505 & 1.807 & 0.531 \\ \hline
-  739 & 739 & 1.225 & 2.318 & 0.203 \\ \hline
-  1035 & 443 & 2.315 & 1.889 & 0.113 \\ \hline
-  1330 & 148 & 3.817 & 0.849 & 0.003 \\ \hline
+  148 & 1330 & 0.062 & 0.934 & 10.0 \\ \hline
+  443 & 1035 & 0.505 & 1.807 & 5.31 \\ \hline
+  739 & 739 & 1.225 & 2.318 & 2.03 \\ \hline
+  1035 & 443 & 2.315 & 1.889 & 1.13 \\ \hline
+  1330 & 148 & 3.817 & 0.849 & 0.3 \\ \hline
 \end{tabular}
 
 \end{table}
@@ -183,7 +192,7 @@ Run the kernelized ridge regression for one digit versus another one of your cho
 \begin{table}[h]
 \centering
 \begin{tabular}{|c||c|c|c|c|c|c|c|c|c|} \hline
-\multicolumn{10}{|c|}{Classification Error Between Digits for $m=228$ ($\%$)} \\ \hline
+\multicolumn{10}{|c|}{Classification Error Between Digits for $m=512$ ($\%$)} \\ \hline
 Digit Pair &0& 1& 2& 3& 4& 5& 6& 7& 8 \\ \hline \hline
 1 &0.45  & & & & & & & & \\ \hline
 2 &3.11  &2.02  & & & & & & &\\ \hline
@@ -242,7 +251,47 @@ Show that
 J(\sum_{i=1}^n \alpha_i k(x_i,.),\theta)=||y - X\theta - K\alpha||^2 + \lambda \alpha^T K \alpha
 \end{equation}
 for some matrix $K$ and $X$ which you will specify together with their dimensions. 
+
+First, consider the sum of squares only,
+\begin{equation}
+\begin{aligned}
+\sum_{i=1}^{n}\left(y_{i}-\theta^{T} x_{i}-g\left(x_{i}\right)\right)^{2} &= \sum_{i=1}^{n}\left(y_{i}-\theta^{T} x_{i} -\sum_{j=1}^n \alpha_i k(x_i, x_j)\right)^{2} \\
+&=  \sum_{i=1}^{n}\left(y_{i}-\theta^{T} x_{i} -\sum_{j=1}^n \alpha_i k(x_i, x_j)\right)^T \left(y_{i}-\theta^{T} x_{i} -\sum_{j=1}^n \alpha_i k(x_i, x_j)\right)\\
+&= \langle \sum_{i=1}^{n}\left(y_{i}-\theta^{T} x_{i} -\sum_{j=1}^n \alpha_i k(x_i, x_j)\right),  \sum_{i=1}^{n}\left(y_{i}-\theta^{T} x_{i} -\sum_{j=1}^n \alpha_i k(x_i, x_j)\right)  \rangle \\
+&=  \left\Vert \sum_{i=1}^{n}\left(y_{i}-\theta^{T} x_{i}- \sum_{j=1}^n \alpha_i k(x_i, x_j)\right) \right\Vert_2^2
+\end{aligned}
+\end{equation}
+Defining a symmetric matrix, $K$,
+\begin{equation}
+K_{ij} = \sum_{i=1}^{n}\sum_{j=1}^n k(x_i, x_j),
+\end{equation}
+it is clear that,
+\begin{equation}
+K \alpha = \sum_{i=1}^{n}\sum_{j=1}^n \alpha_i k(x_i, x_j).
+\end{equation}
+So,
+\begin{equation}
+\sum_{i=1}^{n}\left(y_{i}-\theta^{T} x_{i}-g\left(x_{i}\right)\right)^{2} = ||y - X\theta - K\alpha||^2,
+\end{equation}
+where a matrix $X$ can be constructed such that,
+\begin{equation}
+ X\theta = \sum_{i=1}^{n}\theta^{T} x_{i}.
+\end{equation}
+Next, consider the regularization term
+\begin{equation}
+\begin{aligned}
+\lambda\|g\|_{H}^{2} &= \lambda \langle \sum_{i=1}^{n} \alpha_{i} k\left(x_{i}, .\right), \sum_{j=1}^{n} \alpha_{j} k\left(x_{j}, .\right) \rangle \\
+&= \lambda \sum_{i=1}^{n} \sum_{j=1}^{n} \alpha_i \alpha_j k(x_i, x_j) \\
+&= \lambda \alpha^T K \alpha.
+\end{aligned}
+\end{equation}
+Thus, by substitution,
+\begin{equation}
+J\left(\sum_{i=1}^{n} \alpha_{i} k\left(x_{i}, .\right), \theta\right)=\|y-X \theta-K \alpha\|^{2}+\lambda \alpha^{T} K \alpha.
+\end{equation}
+
 \item Compute $\nabla_\alpha J$, the gradient of $J$ with respect to $\alpha$. Similarly, compute $\nabla_\theta J$, the gradient of $J$ with respect to $\theta$. 
+
 
 \begin{equation}
 \begin{aligned}
@@ -312,6 +361,18 @@ was chosen due to its piecewise linear nature.
 \caption{Semiparametric Regression. Using the equation derived in part 4, model parameters (green) and kernel regression (orange) was found for the data provided (black). The resulting fit is shown in blue.}
 \end{figure}
 
+See Appendix \ref{app:semi} for the Python source code.
+
 \end{enumerate}
 
+\newpage
+\begin{appendices}
+\section{Kernalized Ridge Regression Code} \label{app:krr}
+\subsection{KRR Implementation}
+\lstinputlisting[language=Python]{./code/krr.py}
+\subsection{MNIST Methods}
+\lstinputlisting[language=Python]{./code/mnist_load.py}
+\section{Semiparametric Regression Code} \label{app:semi}
+\lstinputlisting[language=Python]{./code/semipara.py}
+\end{appendices}
 \end{document}
