@@ -1,0 +1,378 @@
+\documentclass{article}[12pt]
+
+% useful packages
+\usepackage{fullpage}
+\usepackage{amsmath,amssymb,amsthm,amsfonts}
+\usepackage{graphicx}
+\usepackage{enumerate}
+\usepackage{algorithm,algorithmic}
+\usepackage{xcolor}
+\usepackage{bbm}
+\usepackage{url}
+\usepackage{caption,subcaption}
+\usepackage{listings}
+\usepackage[title]{appendix}
+
+% theorem type environments
+\newtheorem{thm}{Theorem}
+\newtheorem{prop}{Proposition}
+\newtheorem{lemma}{Lemma}
+\newtheorem{cor}{Corollary}
+\newtheorem{defn}{Definition}
+\newtheorem{assump}{Assumption}
+\newtheorem{example}{Example}
+\newtheorem{conjecture}{Conjecture}
+
+% frequently used symbols
+\newcommand{\bE}{\mathbb{E}}
+\newcommand{\bP}{\mathbb{P}}
+\newcommand{\bQ}{\mathbb{Q}}
+\newcommand{\bR}{\mathbb{R}}
+\newcommand{\bS}{\mathbb{S}}
+\newcommand{\bN}{\mathbb{N}}
+\newcommand{\bZ}{\mathbb{Z}}
+\newcommand{\sC}{{\mathcal C}} 
+\newcommand{\sD}{{\mathcal D}} 
+\newcommand{\sE}{{\mathcal E}} 
+\newcommand{\sF}{{\mathcal F}} 
+\newcommand{\sL}{{\mathcal L}} 
+\newcommand{\sH}{{\mathcal H}} 
+\newcommand{\sN}{{\mathcal N}} 
+\newcommand{\sO}{{\mathcal O}} 
+\newcommand{\sP}{{\mathcal P}} 
+\newcommand{\sR}{{\mathcal R}} 
+\newcommand{\sS}{{\mathcal S}}
+\newcommand{\sU}{{\mathcal U}} 
+\newcommand{\sX}{{\mathcal X}} 
+\newcommand{\sY}{{\mathcal Y}} 
+\newcommand{\sZ}{{\mathcal Z}}
+
+% operators
+\newcommand{\sign}{\mathop{\mathrm{sign}}}
+\newcommand{\supp}{\mathop{\mathrm{supp}}} % support
+\newcommand{\argmin}{\operatornamewithlimits{arg\ min}}
+\newcommand{\argmax}{\operatornamewithlimits{arg\ max}}
+\newcommand{\dist}{\operatorname{dist}}
+\newcommand{\tr}{\text{tr}}
+\newcommand{\vecop}{\text{vec}}
+\newcommand{\st}{\operatorname{s.t.}}
+\newcommand{\cut}{\setminus}
+\newcommand{\ra}{\rightarrow}
+\newcommand{\ind}[1]{\mathbbm{1}\left\{#1\right\}} 
+\newcommand{\given}{\ | \ }
+
+% grouping operators
+\newcommand{\brac}[1]{\left[#1\right]}
+\newcommand{\set}[1]{\left\{#1\right\}}
+\newcommand{\abs}[1]{\left\lvert #1 \right\rvert}
+\newcommand{\paren}[1]{\left(#1\right)}
+\newcommand{\norm}[1]{\left\|#1\right\|}
+\newcommand{\ip}[2]{\left\langle #1,#2 \right\rangle}
+
+% code commands
+\newcommand{\matlab}{\textsc{Matlab }}
+\newcommand{\algname}[1]{\textnormal{\textsc{#1}}}
+
+% header command
+\newcommand{\homework}[4]{
+    \pagestyle{myheadings}
+    \thispagestyle{plain}
+    \newpage
+    \setcounter{page}{1}
+    \setlength{\headsep}{10mm}
+    \noindent
+    \begin{center}
+    \framebox{
+        \vbox{\vspace{2mm}
+            \hbox to 6.28in { {\bf STAT 671: Statistical Learning I
+            \hfill Fall 2019} }
+        \vspace{4mm}
+        \hbox to 6.28in { {\Large \hfill Homework #1 \hfill} }
+        \vspace{2mm}
+        \hbox to 6.28in { \Large \hfill Due: #2 \hfill }
+        \vspace{2mm}
+        \hbox to 6.28in { {\it Student Name: #3} \hfill {\it Professor Name: #4}}
+        \vspace{2mm}}
+   }
+   \end{center}
+   \markboth{Homework #1}{Homework #1}
+   \vspace*{4mm}
+}
+
+\begin{document}
+
+\homework{3}{November 6, 2019}{Ethan Lew}{Dr. Bruno Jedynak}
+
+\section*{Preliminaries}
+\begin{defn}{\textbf{Positive Definite Kernel}}
+A kernel $k : \mathcal X \times \mathcal X \rightarrow \mathbb R$ is said to be positive definite if for any sequence $a_1,a_2,...,a_m \in \mathbb R$ and $x_1, x_2,...,x_m \in \mathcal X$,
+\begin{equation}
+\sum_{i=1}^{m} \sum_{i=1}^{m} a_i a_j k(x_i, x_j) \ge 0.
+\end{equation}
+
+\label{def:pd}
+\end{defn}
+
+\begin{defn}{\textbf{Reproducing Kernel Hilbert Space}}
+Let $\mathcal X$ be a nonempty set and by $\mathcal H$ a Hilbert space of functions $f: \mathcal X \rightarrow \mathbb R$. Then $\mathcal H$ is called a reproducing kernel Hilbert space endowed with the inner product $\langle.,.\rangle$ if there exists $k: \mathcal X \times \mathcal X \rightarrow \mathbb R$ with the following properties.
+\begin{enumerate}
+\item $k$ has the property 
+\begin{equation}
+\langle f, k(x, .) \rangle = f(x), \forall f \in \mathcal H.
+\end{equation}
+\item $k$ spans $\mathcal H$.
+\end{enumerate}
+\end{defn}
+
+\begin{thm}{\textbf{Representer Theorem}} \label{thm:representer}
+Let $\mathcal X$ be a set endowed with a PD kernel $K$, $\mathcal H$ the corresponding RKHS, and $\mathcal{S}=\left\{\mathrm{x}_{1}, \cdots, \mathrm{x}_{n}\right\} \subseteq \mathcal{X}$ a finite set of points in $\mathcal X$. Let $\Psi: \mathbb{R}^{n+1} \rightarrow \mathbb{R}$ be a function of $n+1$ variables, strictly increasing with respect to the last variable.Then, any solution to the optimization problem,
+\begin{equation}
+\min _{f \in \mathcal{H}} \Psi\left(f\left(\mathbf{x}_{1}\right), \cdots, f\left(\mathbf{x}_{n}\right),\|f\|_{\mathcal{H}}\right),
+\end{equation}
+admits the form,
+\begin{equation}
+\forall \mathbf{x} \in \mathcal{X}, \quad f(\mathbf{x})=\sum_{i=1}^{n} \alpha_{i} K\left(\mathbf{x}_{i}, \mathbf{x}\right)=\sum_{i=1}^{n} \alpha_{i} K_{\mathbf{x}_{i}}(\mathbf{x}).
+\end{equation}
+In other words, the solution lives in the finite-dimensional subspace:
+\begin{equation}
+f \in \operatorname{Span}\left(K_{\mathrm{x}_{1}}, \ldots, K_{\mathrm{x}_{n}}\right).
+\end{equation}
+\end{thm}
+
+\section{Kernalized ridge regression}
+\begin{enumerate}
+\item Code the kernalized ridge regression for the 2d data that you already used for the simple classifier and the perceptron. Show your code. Note that an example code for 1d data is available in the folder \lq\lq{}code\rq\rq{} in d2l.   Show 3 examples of results obtain with simulated data in 2 dimensions, using 3 different kernels. 
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.6\textwidth]{./img/krr_k.eps}
+\caption{Kernalized Ridge Regression  for 3 Kernels (1D)}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.73\textwidth]{./img/krr_k2.eps}
+\caption{Kernalized Ridge Regression for 3 Kernels (2D)}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{./img/krr_k2c.eps}
+\caption{Kernalized Ridge Regression Classification  for 3 Kernels (2D)}
+\end{figure}
+
+See Appendix \ref{app:krr} for the Python source code.
+
+\item Import the MNIST dataset. It is available on D2L. A R file is available for reading the files and run a simple classifier.  You will find online similar code in case you use Python,  Matlab or other high level language. 
+
+Code a version of the kernalized ridge regression algorithm that let you run the algorithm for various sets of images from the MNIST dataset such that you can perform controled experiments. The input of the algorithm could be a list of filenames, corresponding to images for training, testing, as well as the corresponding labels.  
+
+Run the kernelized ridge regression for one digit versus another one of your choice. You will see that the size of the full MNIST training set might be too large for the algorithm to run in a reasonable time. Instead, sample smaller training sets, say of size 100. Now, you should be able to run the algorithm. Experiment with smaller and larger training set size. Report the performance by specifying the total number of images correctly classified, as well as the learning time and testing time. Show graphs, with on the horizontal axis the number of images used for training or for testing. 
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.7\textwidth]{./img/mnist_perf.eps}
+\caption{MNIST Kernalized Ridge Regression Performance (Number of Validation Images: 1000).}
+\end{figure}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|c|c|c|c|} \hline
+\multicolumn{5}{|c|}{Classification Between 0 and 1 Benchmark --- Intel Core i7-4790K} \\ \hline
+ Training Size & Testing Size & Learning Time (s) & Testing Time (s) & Classification Error (\%) \\ \hline \hline
+  148 & 1330 & 0.062 & 0.934 & 10.0 \\ \hline
+  443 & 1035 & 0.505 & 1.807 & 5.31 \\ \hline
+  739 & 739 & 1.225 & 2.318 & 2.03 \\ \hline
+  1035 & 443 & 2.315 & 1.889 & 1.13 \\ \hline
+  1330 & 148 & 3.817 & 0.849 & 0.3 \\ \hline
+\end{tabular}
+
+\end{table}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|c||c|c|c|c|c|c|c|c|c|} \hline
+\multicolumn{10}{|c|}{Classification Error Between Digits for $m=512$ ($\%$)} \\ \hline
+Digit Pair &0& 1& 2& 3& 4& 5& 6& 7& 8 \\ \hline \hline
+1 &0.45  & & & & & & & & \\ \hline
+2 &3.11  &2.02  & & & & & & &\\ \hline
+3 &3.55  &2.44  &2.59  & & & &  & &\\ \hline
+4 &1.21  &2.04  &4.35  &1.67  & & & &  &\\ \hline
+5 &4.04  &3.05  &3.77  &5.20  &3.55  & &  & &\\ \hline
+6 &3.38  &3.62  &1.20  &1.90  &1.95  &3.54  & & &\\ \hline
+7 &2.11  &1.76  &3.74  &2.30  &4.25  &2.45  &3.29  &  &\\ \hline
+8 &2.18  &2.71  &3.86  &2.39  &4.15  &3.30  &3.66  &2.83   &\\ \hline
+9 &2.88  &1.79  &2.39  &3.32  &5.31  &3.52  &1.21  &5.37  &3.14  \\ \hline
+\end{tabular}
+\end{table}
+\end{enumerate}
+%\section{Kernalized ridge regression}
+%\begin{enumerate}
+%\item Code the kernalized ridge regression for the 2d example that you already used for the simple classifier and the perceptron. Show your code.  
+%\item Show 3 examples of results obtain with simulated data in 2 dimensions, using 3 different kernels. 
+%\end{enumerate}
+%\section{MNIST dataset}
+%\begin{enumerate}
+%\item Import the MNIST dataset. It is available on D2L. A R file is available for reading the files and run a simple classifier.  you will find online similar code in case you use Matlab or other high level language. 
+%\item Try to run the kernelized ridge regression for the digit zero versus all the other ones.  You will see that the size of the training set is too large. Sample a smaller training set, say of size 100. Now, you should be able to run it. Experiment with larger training set size. Report the performances, learning time and testing time on a graph.   
+%\end{enumerate}
+\section{Semi-parametric regression}
+Let $\mathcal{D}=\{(x_i,y_i), 1 \leq i \leq n\}$ be a training set where $x_i \in \mathbb{R}^d$ is a feature vector, and $y_i \in \mathbb{R}$ is the target, or independent variable. 
+
+We are interested in the following semi-parametric model for predicting $y$, 
+\begin{equation}
+f(x) = \theta^T x + g(x)
+\end{equation}
+where $\theta \in \mathbb{R}^d$ is a vector of parameters and $g: \mathbb{R}^d \mapsto \mathbb{R}$ belongs to a RKHS with kernel $k(.,.)$. 
+
+This model is called semi-parametric because it is the sum of a parametric component, here the linear term $\theta^T x$ and a non-linear component, the function $g(.)$. 
+
+Consider the functional 
+\begin{equation}
+J(\theta,g) = \sum_{i=1}^n \left(y_i - \theta^T x_i - g(x_i)\right)^2 + \lambda ||g||_H^2
+\end{equation}
+\begin{enumerate}
+\item 
+Show that for any $\theta$, a function $g \in H$ that minimizes $J(\theta,g)$ has the following form 
+\begin{equation}
+g(.)=\sum_{i=1}^n \alpha_i k(x_i,.)
+\end{equation}
+where $\alpha \in \mathbb{R}^n$ 
+
+Theorem \ref{thm:representer} states that $g(.)$ has the form described if the functional has the arguments,
+\begin{equation}
+ J\left(g\left(\mathbf{x}_{1}\right), \cdots, g\left(\mathbf{x}_{n}\right),\|g\|_{\mathcal{H}}\right),
+\end{equation}
+and is strictly increasing with respect to the last variable. Thus, holding $\theta$, $\lambda$, $x_i$ and $y_i$ constant for any $i$, the function $g \in H$ that minimizes $J$ can be written in the form.
+ 
+\item 
+Show that 
+\begin{equation}
+J(\sum_{i=1}^n \alpha_i k(x_i,.),\theta)=||y - X\theta - K\alpha||^2 + \lambda \alpha^T K \alpha
+\end{equation}
+for some matrix $K$ and $X$ which you will specify together with their dimensions. 
+
+First, consider the sum of squares only,
+\begin{equation}
+\begin{aligned}
+\sum_{i=1}^{n}\left(y_{i}-\theta^{T} x_{i}-g\left(x_{i}\right)\right)^{2} &= \sum_{i=1}^{n}\left(y_{i}-\theta^{T} x_{i} -\sum_{j=1}^n \alpha_i k(x_i, x_j)\right)^{2} \\
+&=  \sum_{i=1}^{n}\left(y_{i}-\theta^{T} x_{i} -\sum_{j=1}^n \alpha_i k(x_i, x_j)\right)^T \left(y_{i}-\theta^{T} x_{i} -\sum_{j=1}^n \alpha_i k(x_i, x_j)\right)\\
+&= \langle \sum_{i=1}^{n}\left(y_{i}-\theta^{T} x_{i} -\sum_{j=1}^n \alpha_i k(x_i, x_j)\right),  \sum_{i=1}^{n}\left(y_{i}-\theta^{T} x_{i} -\sum_{j=1}^n \alpha_i k(x_i, x_j)\right)  \rangle \\
+&=  \left\Vert \sum_{i=1}^{n}\left(y_{i}-\theta^{T} x_{i}- \sum_{j=1}^n \alpha_i k(x_i, x_j)\right) \right\Vert_2^2
+\end{aligned}
+\end{equation}
+Defining a symmetric matrix, $K$,
+\begin{equation}
+K_{ij} = \sum_{i=1}^{n}\sum_{j=1}^n k(x_i, x_j),
+\end{equation}
+it is clear that,
+\begin{equation}
+K \alpha = \sum_{i=1}^{n}\sum_{j=1}^n \alpha_i k(x_i, x_j).
+\end{equation}
+So,
+\begin{equation}
+\sum_{i=1}^{n}\left(y_{i}-\theta^{T} x_{i}-g\left(x_{i}\right)\right)^{2} = ||y - X\theta - K\alpha||^2,
+\end{equation}
+where a matrix $X$ can be constructed such that,
+\begin{equation}
+ X\theta = \sum_{i=1}^{n}\theta^{T} x_{i}.
+\end{equation}
+Next, consider the regularization term
+\begin{equation}
+\begin{aligned}
+\lambda\|g\|_{H}^{2} &= \lambda \langle \sum_{i=1}^{n} \alpha_{i} k\left(x_{i}, .\right), \sum_{j=1}^{n} \alpha_{j} k\left(x_{j}, .\right) \rangle \\
+&= \lambda \sum_{i=1}^{n} \sum_{j=1}^{n} \alpha_i \alpha_j k(x_i, x_j) \\
+&= \lambda \alpha^T K \alpha.
+\end{aligned}
+\end{equation}
+Thus, by substitution,
+\begin{equation}
+J\left(\sum_{i=1}^{n} \alpha_{i} k\left(x_{i}, .\right), \theta\right)=\|y-X \theta-K \alpha\|^{2}+\lambda \alpha^{T} K \alpha.
+\end{equation}
+
+\item Compute $\nabla_\alpha J$, the gradient of $J$ with respect to $\alpha$. Similarly, compute $\nabla_\theta J$, the gradient of $J$ with respect to $\theta$. 
+
+
+\begin{equation}
+\begin{aligned}
+\nabla_{\alpha} J &= \nabla_{\alpha} \left[ \|y-X \theta-K \alpha\|^{2}+\lambda \alpha^{T} K \alpha \right] \\
+&= 2 \left( -K^T \right)  \left( y-X \theta-K \alpha \right) + \lambda \left( 2K^T \right) \alpha \\
+&= 2K \left( -y + X \theta + K \alpha + \lambda \alpha \right).
+\end{aligned}
+\end{equation}
+
+\begin{equation}
+\begin{aligned}
+\nabla_{\theta} J &= \nabla_{\theta} \left[ \|y-X \theta-K \alpha\|^{2}+\lambda \alpha^{T} K \alpha \right] \\
+&= 2\left(-X^T \right) \left( y - X \theta - K \alpha\right) \\
+&= 2X^T\left( X\theta + K\alpha -y\right).
+\end{aligned}
+\end{equation}
+
+\item Assume that the matrix $X^TX$ is positive definite.
+Find one solution $(\alpha,\theta)$ of the system  $\nabla_\alpha J=0, \nabla_\theta J=0$.  
+
+Consider the system of equations,
+\begin{equation}
+\begin{cases}
+K \left( -y + X \theta + K \alpha + \lambda \alpha \right) = 0 \\
+X^T\left( X\theta + K\alpha -y\right) = 0
+\end{cases}
+\end{equation}
+Allowing the Moore-Penrose pseudoinverse to be defined as,
+\begin{equation}
+A^+ = (A^T A)^{-1} A^T,
+\end{equation}
+it is clear that,
+\begin{equation}
+\tilde{X} = X X^+.
+\end{equation}
+The Moore-Penrose pseudoinverse is the left sided inverse of $X$. This means that $\tilde X$ is a transformation that maps $\mathbb R^d$ onto the column space of $X$. Thus,
+\begin{equation}
+\alpha = (K - \tilde{X} K - \lambda \tilde{X})^+ (y- \tilde{X} y),
+\end{equation}
+meaning,
+\begin{equation}
+\theta = X^+ (y - K \alpha).
+\end{equation}
+
+
+
+\item 
+Write a code that demonstrate in one dimension the semi-parametric regression. Use the data in the file ``hmw3-data1.csv''. Show your code and one plot of a solution.  
+
+A quadratic polynomial model was created for the $X$ matrix, being
+\begin{equation}
+X = [x^2 | x | 1] \in \mathbb R^{d \times 3}.
+\end{equation}
+After the semiparametric regression was applied, the polynomial,
+\begin{equation}
+g(x) = -0.0337 x^2 - 0.0815 x - 0.3146,
+\end{equation}
+was found. The kernel,
+\begin{equation}
+k(x,y) = \text{min}(x,y),
+\end{equation}
+was chosen due to its piecewise linear nature.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.7\textwidth]{./img/semipara.eps}
+\caption{Semiparametric Regression. Using the equation derived in part 4, model parameters (green) and kernel regression (orange) was found for the data provided (black). The resulting fit is shown in blue.}
+\end{figure}
+
+See Appendix \ref{app:semi} for the Python source code.
+
+\end{enumerate}
+
+\newpage
+\begin{appendices}
+\section{Kernalized Ridge Regression Code} \label{app:krr}
+\subsection{KRR Implementation}
+\lstinputlisting[language=Python]{./code/krr.py}
+\subsection{MNIST Methods}
+\lstinputlisting[language=Python]{./code/mnist_load.py}
+\section{Semiparametric Regression Code} \label{app:semi}
+\lstinputlisting[language=Python]{./code/semipara.py}
+\end{appendices}
+\end{document}
