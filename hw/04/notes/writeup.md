@@ -125,9 +125,9 @@ $$
 f(x)=\sum_{i=1}^{n} \alpha_{i} K\left(x_{i}, x\right)
 $$
 
-without using the representer theorem.
+without using the Representer theorem.
 
-Recall from the lest homework:
+Recall from the last homework:
 
 It is possible to express a function as 
 $$
@@ -212,22 +212,23 @@ $$
 
 Thus,
 $$
-J(\alpha) = 1-\left( K_+ \alpha - K_-\alpha\right) + \lambda \alpha^T K \alpha
+J(\alpha) = 1-\left( K_+^T \alpha - K_-^T\alpha\right) + \lambda \alpha^T K \alpha
 $$
 
 4. Compute $\nabla_\alpha J(\alpha)$
 
 $$
-\nabla_\alpha J(\alpha) = -(K_+^T - K_-^T) + 2 \lambda K \alpha
+\nabla_\alpha J(\alpha) = -(K_+ - K_-) + 2 \lambda K \alpha
 $$
 
 Thus, for $\nabla_\alpha J(\alpha) = 0$,
 $$
-\alpha = \frac{1}{2 \lambda}K^{-1} (K_+^T - K_-^T).
+\alpha = \frac{1}{2 \lambda}K^{-1} (K_+ - K_-).
 $$
 
 5. For the linear kernel $K(x, y) = x^T y$, compute the minimizer $f^*(x)$. 
 
+Define $[X]_{i,:} = x_i^T$,
 $$
 f^*(x) =\sum_{i=1}^{n} (\alpha_i x_i)^Tx = \alpha^T X x
 $$
@@ -241,6 +242,6 @@ $$
 $$
 
 $$
-f^*(x) = \frac{1}{2 \lambda} (X_+ - X_-)^T ((XX^T)^{-1})^T X x
+f^*(x) = \frac{1}{2 \lambda} (X_+^T - X_-^T) ((XX^T)^{-1})X x
 $$
 
