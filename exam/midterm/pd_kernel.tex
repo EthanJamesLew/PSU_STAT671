@@ -1,0 +1,331 @@
+\documentclass{article}[12pt]
+
+% useful packages
+\usepackage{fullpage}
+\usepackage{amsmath,amssymb,amsthm,amsfonts}
+\usepackage{graphicx}
+\usepackage{enumerate}
+\usepackage{algorithm,algorithmic}
+\usepackage{xcolor}
+\usepackage{bbm}
+\usepackage{url}
+\usepackage{caption,subcaption}
+\usepackage{listings}
+\usepackage[title]{appendix}
+
+% theorem type environments
+\newtheorem{thm}{Theorem}
+\newtheorem{prp}{Property}
+\newtheorem{prop}{Proposition}
+\newtheorem{lemma}{Lemma}
+\newtheorem{cor}{Corollary}
+\newtheorem{defn}{Definition}
+\newtheorem{assump}{Assumption}
+\newtheorem{example}{Example}
+\newtheorem{conjecture}{Conjecture}
+
+% frequently used symbols
+\newcommand{\bE}{\mathbb{E}}
+\newcommand{\bP}{\mathbb{P}}
+\newcommand{\bQ}{\mathbb{Q}}
+\newcommand{\bR}{\mathbb{R}}
+\newcommand{\bS}{\mathbb{S}}
+\newcommand{\bN}{\mathbb{N}}
+\newcommand{\bZ}{\mathbb{Z}}
+\newcommand{\sC}{{\mathcal C}} 
+\newcommand{\sD}{{\mathcal D}} 
+\newcommand{\sE}{{\mathcal E}} 
+\newcommand{\sF}{{\mathcal F}} 
+\newcommand{\sL}{{\mathcal L}} 
+\newcommand{\sH}{{\mathcal H}} 
+\newcommand{\sN}{{\mathcal N}} 
+\newcommand{\sO}{{\mathcal O}} 
+\newcommand{\sP}{{\mathcal P}} 
+\newcommand{\sR}{{\mathcal R}} 
+\newcommand{\sS}{{\mathcal S}}
+\newcommand{\sU}{{\mathcal U}} 
+\newcommand{\sX}{{\mathcal X}} 
+\newcommand{\sY}{{\mathcal Y}} 
+\newcommand{\sZ}{{\mathcal Z}}
+
+% operators
+\newcommand{\sign}{\mathop{\mathrm{sign}}}
+\newcommand{\supp}{\mathop{\mathrm{supp}}} % support
+\newcommand{\argmin}{\operatornamewithlimits{arg\ min}}
+\newcommand{\argmax}{\operatornamewithlimits{arg\ max}}
+\newcommand{\dist}{\operatorname{dist}}
+\newcommand{\tr}{\text{tr}}
+\newcommand{\vecop}{\text{vec}}
+\newcommand{\st}{\operatorname{s.t.}}
+\newcommand{\cut}{\setminus}
+\newcommand{\ra}{\rightarrow}
+\newcommand{\ind}[1]{\mathbbm{1}\left\{#1\right\}} 
+\newcommand{\given}{\ | \ }
+
+% grouping operators
+\newcommand{\brac}[1]{\left[#1\right]}
+\newcommand{\set}[1]{\left\{#1\right\}}
+\newcommand{\abs}[1]{\left\lvert #1 \right\rvert}
+\newcommand{\paren}[1]{\left(#1\right)}
+\newcommand{\norm}[1]{\left\|#1\right\|}
+\newcommand{\ip}[2]{\left\langle #1,#2 \right\rangle}
+
+% code commands
+\newcommand{\matlab}{\textsc{Matlab }}
+\newcommand{\algname}[1]{\textnormal{\textsc{#1}}}
+
+% header command
+\newcommand{\homework}[4]{
+    \pagestyle{myheadings}
+    \thispagestyle{plain}
+    \newpage
+    \setcounter{page}{1}
+    \setlength{\headsep}{10mm}
+    \noindent
+    \begin{center}
+    \framebox{
+        \vbox{\vspace{2mm}
+            \hbox to 6.28in { {\bf STAT 671: Statistical Learning I
+            \hfill Fall 2019} }
+        \vspace{4mm}
+        \hbox to 6.28in { {\Large \hfill Homework #1 \hfill} }
+        \vspace{2mm}
+        \hbox to 6.28in { \Large \hfill Due: #2 \hfill }
+        \vspace{2mm}
+        \hbox to 6.28in { {\it Student Name: #3} \hfill {\it Professor Name: #4}}
+        \vspace{2mm}}
+   }
+   \end{center}
+   \markboth{Homework #1}{Homework #1}
+   \vspace*{4mm}
+}
+
+\begin{document}
+\title{Is the Kernel Positive Definite? \\ \large A Poor Attempt at a Comprehensive Study Guide}
+
+\author{Ethan Lew}
+
+\maketitle
+
+\section{Definitions / Properties}
+
+\begin{defn}{\textbf{Positive Definite Kernel}}
+A kernel $k : \mathcal X \times \mathcal X \rightarrow \mathbb R$ is said to be positive definite if for any sequence $a_1,a_2,...,a_m \in \mathbb R$ and $x_1, x_2,...,x_m \in \mathcal X$,
+\begin{equation} \label{equ:pdcond}
+\sum_{i=1}^{m} \sum_{i=1}^{m} a_i a_j k(x_i, x_j) \ge 0.
+\end{equation}
+\label{def:pd}
+\end{defn}
+
+For a tuple of positive definite kernels $k_i : : \mathcal X \times \mathcal X \rightarrow \mathbb R, i \in \mathbb N$, 
+\begin{prp}{} \label{prp:sum}
+If $\lambda_{1}, \ldots, \lambda_{n} \geq 0$, then
+\begin{equation}
+\sum_{i=1}^{n} \lambda_{i} k_{i},
+\end{equation}
+is positive definite.
+\end{prp}
+
+\begin{prp} \label{prp:mult}
+If $a_{1}, \dots, a_{n} \in \mathbb{N}$, then
+\begin{equation}
+k_{1}^{a_{1}} \ldots k_{n}^{a_{n}},
+\end{equation}
+is positive definite.
+\end{prp}
+
+\begin{prp}
+Permit a sequence $\left( \mathcal X_i \right)_{i=1}^{n}$, and $k_i : \mathcal{X}_{i} \times \mathcal{X}_{i} \rightarrow \mathbb R $ is a sequence of positive definite kernels, then
+\begin{equation}
+k\left(\left(x_{1}, \ldots, x_{n}\right),\left(y_{1}, \ldots, y_{n}\right)\right)=\prod_{i=1}^{n} k_{i}\left(x_{i}, y_{i}\right),
+\end{equation}
+and,
+\begin{equation}
+k\left(\left(x_{1}, \ldots, x_{n}\right),\left(y_{1}, \ldots, y_{n}\right)\right)=\sum_{i=1}^{n} k_{i}\left(x_{i}, y_{i}\right),
+\end{equation}
+are positive definite kernels.
+\end{prp}
+
+\begin{defn}{\textbf{Reproducing Kernel Hilbert Space}}
+Let $\mathcal X$ be a nonempty set and by $\mathcal H$ a Hilbert space of functions $f: \mathcal X \rightarrow \mathbb R$. Then $\mathcal H$ is called a reproducing kernel Hilbert space endowed with the inner product $\langle.,.\rangle$ if there exists $k: \mathcal X \times \mathcal X \rightarrow \mathbb R$ with the following properties.
+\begin{enumerate}
+\item $k$ has the property 
+\begin{equation}
+\langle f, k(x, .) \rangle = f(x), \forall f \in \mathcal H.
+\end{equation}
+\item $k$ spans $\mathcal H$.
+\end{enumerate}
+\end{defn}
+
+\begin{thm}{\textbf{Aronzsajn's Theorem}} \label{thm:aron}
+$k$ is a positive definite kernel on the set of $\mathcal X$ if and only if there exists a Hilbert space $\mathcal H$ and a mapping
+\begin{equation}
+\phi: \mathcal X \rightarrow \mathcal H,
+\end{equation}
+such that, for any $x, x' \in \mathcal X$:
+\begin{equation}
+k(x, x') = \langle \phi(x), \phi(x') \rangle_{\mathcal H}.
+\end{equation}
+\label{thm:aron}
+\end{thm}
+
+
+\section{Common PD Kernels} \label{sec:commpd}
+
+\begin{enumerate}
+\item Linear
+\begin{equation}
+k(x, y)=x^{T} y, \quad x, y \in \mathbb{R}^{d}
+\end{equation}
+\item Polynomial
+\begin{equation}
+k(x, y)=\left(x^{T} y+r\right)^{n}, \quad x, y \in \mathbb{R}^{d}, r \geq 0
+\end{equation}
+\item Gaussian / RBF
+\begin{equation}
+K(x, y)=e^{-\frac{||x-y||^2}{2 \sigma^2}}, \quad x, y \in \mathbb{R}^{d}, \sigma > 0.
+\end{equation}
+\item Laplacian
+\begin{equation}
+K(x, y)=e^{-\alpha\|x-y\|}, \quad x, y \in \mathbb{R}^{d}, \alpha>0.
+\end{equation}
+\item Abel 
+\begin{equation}
+K(x, y)=e^{-\alpha|x-y|}, \quad x, y \in \mathbb{R}, \alpha>0.
+\end{equation}
+\end{enumerate}
+
+\section{PD Proving Strategies}
+
+In class, we've proven that a kernel is positive definite by...
+\begin{enumerate}
+\item \textbf{The PD Condition.} It is required to show that equation \ref{equ:pdcond} holds for any sequence of $a_1, ..., a_m \in \mathbb R$ and any sequence of $x_1, ..., x_m \in \mathcal X$. This has been done typically by showing that there is a function $f : \mathbb R^m \times \mathcal X ^ m \rightarrow \mathcal V$, such that,
+\begin{equation}
+\sum_{i=1}^{m} \sum_{i=1}^{m} a_{i} a_{j} k\left(x_{i}, x_{j}\right) = \left| \left| f \left(a_1, ..., a_m, x_1, ..., x_m \right) \right| \right|_2^2 ,
+\end{equation}
+where $\mathcal V$ is some vector space endowed with a norm.
+\item \textbf{The Operation on Kernels.} Utilize properties \ref{prp:sum}, \ref{prp:mult} to show that a kernel is composed of known PD kernels, typically the ones presented in section \ref{sec:commpd}.
+\item \textbf{Aronzsajn's Theorem.} Find a function $\phi: \mathcal{X} \rightarrow \mathcal{H}$ and use theorem \ref{thm:aron} to show PD.
+\item \textbf{The RKHS.} Find \textit{the unique} RKHS for a given kernel. Generally, this approach requires the most effort because the space is guessed. Then, it is required to show that such a space is a Hilbert space, and satisfies the additional RKHS properties.
+\end{enumerate}
+
+\section{The PD Kernel Quiz}
+
+\begin{enumerate}
+\item $\mathcal{X}=(-1,1), \quad K\left(x, x^{\prime}\right)=\frac{1}{1-x x^{\prime}}$
+
+\textbf{Yes}. Clearly, the restrictions resemble to the geometric series formula,
+\begin{equation}
+\sum_{n=0}^{\infty}a r^n = \frac{a}{1-r}, |r| < 1.
+\end{equation}
+Accordingly, knowing that $k'(x, x') = xx'$ is PD and that
+\begin{equation}
+\frac{1}{1-x x^{\prime}} = \sum_{n=0}^{\infty} (xx')^n,
+\end{equation}
+from property \ref{prp:sum}, \ref{prp:mult}, it is clear that $K$ is PD.
+
+\item $\mathcal{X}=\mathbb{N}, \quad K\left(x, x^{\prime}\right)=2^{x+x^{\prime}}$
+
+\textbf{Yes}. Note that we cannot use the operations approach, as $k'(x, y) = x + x'$ is not a PD kernel ($(a_1, a_2) = (1, -1), (x_1, x_2) = (1, 2)$). However, recall the property,
+\begin{equation}
+2^{x+x^{\prime}} = 2^x2^{x'}.
+\end{equation}
+Consider the function $\phi: \mathbb N \rightarrow \mathbb N$, 
+\begin{equation}
+\phi(x) = 2^x.
+\end{equation}
+It is clear, then, that
+\begin{equation}
+\langle \phi(x), \phi(x') \rangle = 2^{x + x'}.
+\end{equation}
+By theorem \ref{thm:aron}, $K$ is PD.
+
+
+\item $\mathcal{X}=\mathbb{N}, \quad K\left(x, x^{\prime}\right)=2^{x x^{\prime}}$
+
+\textbf{Yes}. Is is known that $k'(x,x') = xx'$ is PD. Further, the Maclaurin series of $2^{xx'}$ is
+\begin{equation}
+2^{x x^{\prime}} = \sum_{n=0}^{\infty} \frac{(\ln 2)^n (xx')^n}{n!}.
+\end{equation} 
+Using properties \ref{prp:sum}, \ref{prp:mult}, $K$ is PD.
+
+\item $\mathcal{X}=\mathbb{R}_{+}, \quad K\left(x, x^{\prime}\right)=\log \left(1+x x^{\prime}\right)$
+
+\textbf{No.} Consider the sequence $(a_1, a_2) = (a_1, -1)$ and $(x_1, x_2) = (x_1, 1)$. Then, 
+\begin{equation}
+\sum_{i=1}^{m} \sum_{i=1}^{m} a_{i} a_{j} k\left(x_{i}, x_{j}\right) = 2a_1^2 \ln\left(1+ x_1\right)-2a_1 \ln\left(1+ x_1\right) + \ln 2.
+\end{equation}
+Thus, when $a_1 \in (0, 1)$,
+\begin{equation}
+\sum_{i=1}^{m} \sum_{i=1}^{m} a_{i} a_{j} k\left(x_{i}, x_{j}\right) < 0 \iff x > 2 e^{-\frac{\ln 2}{2(a^2 - a)}}-1.
+\end{equation}
+This produces a counter-example $(a_1, a_2) = (0.5, -1)$ and $(x_1, x_2) = (20, 1)$.
+
+\item $\mathcal{X}=\mathbb{R}, \quad K\left(x, x^{\prime}\right)=\exp \left(-\left|x-x^{\prime}\right|^{2}\right)$
+
+\textbf{Yes}. This is a special case of the Gaussian PD kernel when $\mathcal X = \mathbb R, \sigma=\frac{\sqrt 2}{2}$.
+
+\item $\mathcal{X}=\mathbb{R}, \quad K\left(x, x^{\prime}\right)=\cos \left(x+x^{\prime}\right)$
+
+\textbf{No.} Clearly, when $(a_1, a_2) = (-1, 1)$ and $(x_1, x_2)=(\pi/4, 0)$, 
+
+\begin{equation}
+\sum_{i=1}^{m} \sum_{i=1}^{m} a_{i} a_{j} k\left(x_{i}, x_{j}\right) = -\frac{\sqrt 2}{2} < 0.
+\end{equation}
+
+\item $\mathcal{X}=\mathbb{R}, \quad K\left(x, x^{\prime}\right)=\cos \left(x-x^{\prime}\right)$
+
+\textbf{Yes.} The method that I've used to show this is somewhat complicated. First, it is necessary to show that the complex-valued kernel,
+\begin{equation}
+K_{1}(x, z)=\mathrm{e}^{i(x-x') },
+\end{equation}
+is PD. This is simple but requires work as it doesn't fall under the commonly used kernels presented previously. 
+\begin{equation}
+\begin{aligned} \sum_{k=1}^{N} \sum_{j=1}^{N} a_{j} a_{k} K_{1}\left(x_{k}, x_{j}\right) &=\sum_{k=1}^{N} \sum_{j=1}^{N} a_{j} a_k \mathrm{e}^{i\left(x_{k}-x_{j}\right) } \\ &=\sum_{k=1}^{N} a_{k} e^{i x_{k}} \sum_{j=1}^{N} a_{j} \mathrm{e}^{-i x_{j}} \\ &=\left|\sum_{j=1}^{N} a_{j} \mathrm{e}^{i x_{j} \cdot t}\right|^{2} \geq 0. \end{aligned}
+\end{equation}
+Next, because of the fact that,
+\begin{equation}
+\cos (x-x')=\frac{1}{2}\left(e^{i(x-x')}+e^{-i(x-x')}\right),
+\end{equation}
+using properties \ref{prp:sum}, \ref{prp:mult}, $K$ is positive definite.
+
+\item $\mathcal{X}=\mathbb{R}_{+}, \quad K\left(x, x^{\prime}\right)=\min \left(x, x^{\prime}\right)$
+
+\textbf{Yes}. Define the indicator function,
+\begin{equation}
+\mathbb{I}_A =  \left\{
+\begin{tabular}{ll}
+1 & \mbox{ if A is true}\\
+0 & \mbox{otherwise}
+\end{tabular}
+\right.
+\end{equation}
+Consider $\phi: \mathbb R_+ \rightarrow \mathcal H$,
+\begin{equation}
+\phi(x) = I_{t<x}, \quad t \in \mathbb R _+,
+\end{equation}
+Previously, it was shown that
+\begin{equation}
+\langle \phi(x), \phi(x') \rangle = \int_0^{\infty} I_{t < x} I_{t < x'}= \operatorname{min}(x, x').
+\end{equation}
+By theorem \ref{thm:aron}, $K$ is PD.
+
+\item $\mathcal{X}=\mathbb{R}_{+}, \quad K\left(x, x^{\prime}\right)=\max \left(x, x^{\prime}\right)$
+
+\textbf{No}. Consider the sequence $a_1=1, a_2=-1$ and $x_1=0.1, x_2=1$,
+\begin{equation}
+\sum_{i=1}^{2} \sum_{i=1}^{2} a_i a_j k(x_i, x_j) = 0.1 -1 -1 + 1 = -0.9 \not \ge 0.
+\end{equation}
+
+
+\item $\mathcal{X}=\mathbb{R}_{+}, \quad K\left(x, x^{\prime}\right)=\min \left(x, x^{\prime}\right) / \max \left(x, x^{\prime}\right)$
+
+\item $\mathcal{X}=\mathbb{N}, \quad K\left(x, x^{\prime}\right)=G C D\left(x, x^{\prime}\right)$
+
+\item $\mathcal{X}=\mathbb{N}, \quad K\left(x, x^{\prime}\right)=L C M\left(x, x^{\prime}\right)$
+
+\item $\mathcal{X}=\mathbb{N}, \quad K\left(x, x^{\prime}\right)=G C D\left(x, x^{\prime}\right) / L C M\left(x, x^{\prime}\right)$
+
+\end{enumerate}
+
+\end{document}
