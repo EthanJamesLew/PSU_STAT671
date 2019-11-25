@@ -141,18 +141,18 @@ meaning,
 \end{equation}
 Thus,
 \begin{equation}
-f_\phi(x) =\frac{K(x, x) - 2 \sum_{i=1}^{n} K(x, x_i) + \frac{1}{n^2} \sum_{i=1}^{n} \sum_{j=1}^{n} K(x_i, x_j)}{\max _{1 \leq i \leq n} K(x_i, x_i) - 2 \sum_{j=1}^{n} K(x_j, x_i) + \frac{1}{n^2} \sum_{k=1}^{n} \sum_{j=1}^{n} K(x_k, x_j)}
+f_\phi(x) =\frac{K(x, x) -  \frac{2}{n} \sum_{i=1}^{n} K(x, x_i) + \frac{1}{n^2} \sum_{i=1}^{n} \sum_{j=1}^{n} K(x_i, x_j)}{\max _{1 \leq i \leq n} K(x_i, x_i) -  \frac{2}{n} \sum_{j=1}^{n} K(x_j, x_i) + \frac{1}{n^2} \sum_{k=1}^{n} \sum_{j=1}^{n} K(x_k, x_j)}
 \end{equation}
 It is useful to recognize what can be ``computed'' during training. That is, collect the terms that rely on the training data only. Define,
 \begin{equation}
 \begin{aligned}
 b &=  \frac{1}{n^2} \sum_{k=1}^{n} \sum_{j=1}^{n} K(x_k, x_j) \\
-c &= {\max _{1 \leq i \leq n} K(x_i, x_i) - 2 \sum_{j=1}^{n} K(x_j, x_i) + \frac{1}{n^2} \sum_{k=1}^{n} \sum_{j=1}^{n} K(x_k, x_j)}.
+c &= {\max _{1 \leq i \leq n} K(x_i, x_i) - \frac{2}{n} \sum_{j=1}^{n} K(x_j, x_i) + b}.
 \end{aligned}
 \end{equation}
 Now,
 \begin{equation}
-f_\phi(x) =\frac{K(x, x) - 2 \sum_{i=1}^{n} K(x, x_i) + b}{c}.
+f_\phi(x) =\frac{K(x, x) -  \frac{2}{n} \sum_{i=1}^{n} K(x, x_i) + b}{c}.
 \end{equation}
 
 \newpage
