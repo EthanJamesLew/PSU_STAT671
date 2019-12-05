@@ -109,7 +109,7 @@ if __name__ == "__main__":
     N = 2
     k = 5
     data = np.random.rand(M, N)*2 - 1
-    membership = kernalized_kmeans(data, k, lambda x, y: k_gaussian(x, y, 1))
+    membership = kernalized_kmeans(data, k, lambda x, y: k_gaussian(x, y, .1))
     plt.figure()
     plt.scatter(*data[membership==0, :].T)
     plt.scatter(*data[membership==1, :].T)
