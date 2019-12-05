@@ -37,12 +37,12 @@ def kernel_mat(f, x):
             K[j, i] = v
     return K
 def kernalized_kmeans(X, k, kernel):
-    km = KernelKMeans(k, 100, kernel)
+    km = KKernelClustering(k, 100, kernel)
     km.kernel = kernel
     km.train(X)
     return km.classify(X)
 
-class KernelKMeans:
+class KKernelClustering:
     def __init__(self, k, max_iter, kernel):
         self._k = k
         self._max_iter = max_iter
@@ -78,7 +78,7 @@ class KernelKMeans:
             if 1 - float(n_crit) / M < 1E-3:
                 break
         self._X = X
-        return self
+        return self._labels
 
     def _get_dist(self, K, dist, within_dist, update=True):
         for label in range(self._k):

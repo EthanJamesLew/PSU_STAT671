@@ -7,18 +7,48 @@ Contains methods to describe graphs using matrices
 
 import numpy as np
 import scipy.spatial as ssp
+import matplotlib.collections as mcl
 
-def get_dist_matrix(X, p=2):
+def view_graph(ax, X, A, color=[0,0,0]):
+    ''' view_graph
+    Given a graph with vertices at X and edge adjacency A, plot the results on ax
+    '''
+    M, N = X.shape
+    ax.scatter(*X.T, zorder=100)
+    ls = []
+    alphas = []
+    for idx, xi in enumerate(X):
+        for jdx, xj in enumerate(X):
+            if A[idx, jdx] > 1E-12 and idx < jdx:
+                ls.append([xi, xj])
+                alphas.append(A[idx, jdx])
+    alphas = np.log(1/np.array(alphas)) + 0.1
+    alphas /= np.max(alphas)
+    print(alphas)
+    alphas = np.clip(alphas, 0.0, 1.0)
+    print(alphas)
+    n_seg = len(ls)
+    RGB = np.tile(color, reps=[n_seg, 1])
+    RGBA = np.vstack((RGB.T, alphas)).T
+    ax.add_collection(mcl.LineCollection(ls, colors=RGBA))
+    return ax
+
+
+def get_dist_matrix(X, dist= lambda x,y: np.linalg.norm(x - y)):
     '''
     Given a collection of M points of N dimensions, calculate a matrix D such that
     D_ij = ||xi - xj||_p, for xi, xj in X
     :param X: [M x N] X
-    :param p: p-norm parameter
     :return: [M x M] D
     '''
-    return ssp.distance_matrix(X, X, p=p)
+    M, N = X.shape
+    D = np.zeros((M, M))
+    for idx, xi in enumerate(X):
+        for jdx, xj in enumerate(X):
+            D[idx, jdx] = dist(xi, xj)
+    return D
 
-def construct_graph(X, p=2, type="knn", param=None):
+def construct_graph(X, type="knn", param=None, **kwargs):
     '''
     From M data points of dimension N, construct the weighted adjacency matrix W wrt distance p-norm, a degree matrix D
     and graph laplacian L
@@ -31,37 +61,30 @@ def construct_graph(X, p=2, type="knn", param=None):
     :param param: construction parameter
     :return: W, D, L
     '''
-    dist = get_dist_matrix(X, p=p)
+    dist = get_dist_matrix(X, **kwargs)
     if type == "eball":
         e = param if param is not None else 1.0
-        dist[np.abs(dist) < e] = 0
-        W = dist
+        mask = np.abs(dist) < e
+        W = dist*mask
     elif type == "knn":
         mask = np.zeros(dist.shape, dtype=np.int32)
+        M, _ = dist.shape
         k = param if param is not None else 2
-        idx = np.argsort(dist)
-        for ii in range(dist.shape[0]):
-            for jj in range(k):
-                mask[ii, idx[jj, ii]] = 1
-                mask[idx[jj, ii], ii] = 1
+        for ii in range(M):
+            di = dist[ii, :]
+            idx = np.argsort(di)
+            mask[ii, idx[:k]] = 1
+            mask[idx[:k], ii] = 1
         W = dist*mask
     elif type == "full":
         W = dist
-    D =  np.diag(np.sum(np.abs(W) > 1E-6, axis=0))
+    D =  np.diag(np.sum(W, axis=0))
     return W, D, D - W
-
-def spectral_clustering(L, k):
-    ed, ev = np.eig(L)
-    edidx = np.argsort(ed)
-    ed = ed[edidx]
-    evl = ev[:, edidx]
-    ed = ed[:k]
-    Y = evl[:, :k].T
-    # TODO: k means the spectrum
 
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
-    X = np.random.rand(6, 3)
-
-    W, D, L = construct_graph(X, param= 2)
-    print(L)
+    X = np.random.rand(100, 2)
+    W, D, L = construct_graph(X, type='knn', param= 3)
+    fig, ax = plt.subplots()
+    view_graph(ax, X, W)
+    plt.show()
