@@ -1,0 +1,373 @@
+%&hylatex
+%File: c:\paul\550.436s\hwkassign.tex Wed Feb 07 11:38:34 2001
+
+\documentclass[12pt]{article}
+% Nice page size.
+\setlength{\textwidth}{7in} \setlength{\textheight}{9.8in}
+\setlength{\topmargin}{-1in} \setlength{\oddsidemargin}{-0.25in}
+\setlength{\evensidemargin}{-0.25in}
+%
+\usepackage{graphicx}   %       Graphics bundle
+\usepackage{pspicture}  %       PSPicture
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{bbm}
+%\setlength{\topmargin}{-0.4in}
+%\setlength{\topskip}{0.3in}    % between header and text
+%\setlength{\textheight}{9in} % height of main text
+%\setlength{\textwidth}{6.5in}    % width of text
+%\setlength{\oddsidemargin}{0in} % odd page left margin
+%\setlength{\evensidemargin}{0in} % even page left margin
+%\linespread{1.3}
+%\setlength{\parindent}{0pt}
+
+\pagestyle{myheadings}
+\usepackage{graphicx}
+\usepackage{epstopdf}
+\DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
+\usepackage{color}
+\usepackage{hyperref}
+
+% theorem type environments
+\newtheorem{thm}{Theorem}
+\newtheorem{prop}{Proposition}
+\newtheorem{lemma}{Lemma}
+\newtheorem{cor}{Corollary}
+\newtheorem{defn}{Definition}
+\newtheorem{assump}{Assumption}
+\newtheorem{example}{Example}
+\newtheorem{conjecture}{Conjecture}
+
+
+% operators
+\newcommand{\sign}{\mathop{\mathrm{sign}}}
+\newcommand{\supp}{\mathop{\mathrm{supp}}} % support
+\newcommand{\argmin}{\operatornamewithlimits{arg\ min}}
+\newcommand{\argmax}{\operatornamewithlimits{arg\ max}}
+\newcommand{\dist}{\operatorname{dist}}
+\newcommand{\tr}{\text{tr}}
+\newcommand{\vecop}{\text{vec}}
+\newcommand{\st}{\operatorname{s.t.}}
+\newcommand{\cut}{\setminus}
+\newcommand{\ra}{\rightarrow}
+\newcommand{\ind}[1]{\mathbbm{1}\left\{#1\right\}} 
+\newcommand{\given}{\ | \ }
+
+%\input{commands}
+
+\begin{document}
+\markright{{\bf Statistical Learning I\\Exam}}
+\thispagestyle{empty}
+%\includegraphics{psulogo_horiz_bw.eps}\hfill\includegraphics{deptlogo}
+\vspace{10pt}
+\begin{center}
+  {\Large STAT 671: Statistical Learning I}\\
+{\Large Exam }\\
+{\Large Monday November 18$^{th}$, 2019}
+\end{center}
+\noindent
+{\Large \bf Your Name: Ethan Lew}
+
+\section*{About this exam:}
+
+
+
+\noindent 
+{\bf Kernalizing} is a straightforward single question problem. 10 points.  
+
+
+\noindent
+{\bf A simple kernel} is a challenging three question problem.  30 points. 
+
+\noindent
+{\bf  Least squares optimization with a first guess} is a one question problem.  It is challenging without the hint. However, the hint makes it fairly straightforward.  20 points without the hint. 15 points with the hint. Join your unopened envelope with your exam to claim the full 20 points for this problem! 
+
+\noindent
+{\bf Cheat sheet:} Join it to your exam for earning 20 points. 
+
+\noindent
+{\bf Percentage point:} your total out of 80 points. 
+
+\noindent
+{\bf You have one hour and fifteen minutes. Do good work!}
+\section{Kernalizing}
+A novelty detection algorithm for data points in $\mathbb{R}^d$ could work as follows: 
+
+Let $\mathcal{T}=\{(x_1,\ldots,x_n\}$ be given, with $x_i \in \mathbb{R}^d$. 
+We compute the center of mass 
+\begin{equation}
+\bar{x}=\frac{1}{n}\sum_{i=1}^n x_i
+\end{equation}
+Then, for a new point $x \in \mathbb{R}^d$, we compute 
+\begin{equation}
+f(x) = \frac{||x-\bar{x}||^2}{\max_{1\leq i \leq n}||x_i-\bar{x}||^2}
+\end{equation}
+
+and we declare $x$ to be a novelty when $f(x)$ is larger than some threshold. 
+
+Now, we want this algorithm to be applicable when the data points belong to an arbitrary set $\mathcal{X}$. 
+In order to do this, we map 
+\begin{eqnarray*}
+\mathcal{X} &\to& H\\
+x & \mapsto & \phi(x)
+\end{eqnarray*}
+where $H$ is a Hilbert space with inner product
+\begin{equation}
+K(x,y) = <\phi(x),\phi(y)>_H
+\end{equation}
+A new point is then a novelty when $f\left(\phi(x)\right)$ is larger than some constant. 
+
+Kernalize this algorithm, that is write $f(\phi(x))$ using $K$ but not $\phi$. 
+\newpage
+
+Call the kernalized $f(\phi(x)) = f_\phi(x)$. Use the mapping $x \mapsto \phi(x)$ to permit the substitution,
+\begin{equation}
+f_\phi(x)=\frac{\|\phi(x)-\bar{\phi}\|^{2}}{\max _{1 \leq i \leq n}\left\|\phi(x_{i})-\bar{\phi}\right\|^{2}}.
+\end{equation}
+Next, using $||x||^2 = \langle x, x \rangle$,
+\begin{equation}
+\begin{aligned}
+f_\phi (x) &= \frac{\langle \phi(x) - \bar{\phi},   \phi(x) - \bar{\phi}\rangle}{ \max _{1 \leq i \leq n} \langle \phi(x_i) - \bar{\phi},   \phi(x_i) - \bar{\phi}\rangle} \\
+&= \frac{\langle \phi(x), \phi(x) \rangle - 2 \langle \phi(x), \bar{\phi} \rangle + \langle \bar{\phi}, \bar{\phi} \rangle}{\max _{1 \leq i \leq n}  \langle \phi(x_i), \phi(x_i) \rangle - 2 \langle \phi(x_i), \bar{\phi} \rangle + \langle \bar{\phi}, \bar{\phi} \rangle}
+\end{aligned}
+\end{equation}
+Next,
+\begin{equation}
+\bar{\phi} = \frac{1}{n} \sum_{i=1}^{n} \phi(x_i),
+\end{equation}
+meaning,
+\begin{equation}
+\langle \phi(x),  \bar{\phi} \rangle = \frac{1}{n} \sum_{i=1}^{n} K(x, x_i).
+\end{equation}
+Thus,
+\begin{equation}
+f_\phi(x) =\frac{K(x, x) -  \frac{2}{n} \sum_{i=1}^{n} K(x, x_i) + \frac{1}{n^2} \sum_{i=1}^{n} \sum_{j=1}^{n} K(x_i, x_j)}{\max _{1 \leq i \leq n} K(x_i, x_i) -  \frac{2}{n} \sum_{j=1}^{n} K(x_j, x_i) + \frac{1}{n^2} \sum_{k=1}^{n} \sum_{j=1}^{n} K(x_k, x_j)}
+\end{equation}
+It is useful to recognize what can be ``computed'' during training. That is, collect the terms that rely on the training data only. Define,
+\begin{equation}
+\begin{aligned}
+b &=  \frac{1}{n^2} \sum_{k=1}^{n} \sum_{j=1}^{n} K(x_k, x_j) \\
+c &= {\max _{1 \leq i \leq n} K(x_i, x_i) - \frac{2}{n} \sum_{j=1}^{n} K(x_j, x_i) + b}.
+\end{aligned}
+\end{equation}
+Now,
+\begin{equation}
+f_\phi(x) =\frac{K(x, x) -  \frac{2}{n} \sum_{i=1}^{n} K(x, x_i) + b}{c}.
+\end{equation}
+
+\newpage
+
+
+\section{A simple kernel} 
+Let $\mathcal{X}=\{x_1,\ldots,x_n\}$ be a finite set, {\bf all the elements being distinct}. 
+We define over $\mathcal{X}$ the kernel 
+\begin{equation}
+\label{eq:1}
+K(x,y) = \left\{ \begin{array}{cc}
+1 & \mbox{ if } x=y\\
+0 & \mbox{ if } x \not = y
+\end{array}
+\right.
+\end{equation}
+\begin{enumerate}
+\item Verify that $K$ defined in (\ref{eq:1}) is symmetric and positive definite. 
+
+First, to show symmetry, it necessary to show that
+\begin{equation}
+K(x, y) = K(y, x).
+\end{equation}
+This is done simply by
+\begin{equation}
+K(x, y) =  \left\{ \begin{array}{cc}
+1 & \mbox{ if } x=y\\
+0 & \mbox{ if } x \not = y
+\end{array}
+\right. 
+= 
+ \left\{ \begin{array}{cc}
+1 & \mbox{ if } y=x\\
+0 & \mbox{ if } y \not = x
+\end{array}
+\right.
+= K(y, x).
+\end{equation}
+
+
+Second, to show PD, the following condition must hold, for any $z_1,...,z_p \in \mathcal X$ and $\alpha_1, ..., \alpha_p \in \mathbb  R$,
+\begin{equation}
+\sum_{i=1}^{p} \sum_{j=1}^{p} \alpha_i \alpha_j K(z_i, z_j) \ge 0.
+\end{equation}
+Recognize that,
+\begin{equation}
+K(z_i, z_j) = \mathbbm{1}_{z_i = z_j},
+\end{equation}
+and,
+\begin{equation}
+\mathbbm{1}_{z_i = z_j} = \sum_{k=1}^{n} \mathbbm 1_{z_i = x_k} \mathbbm 1_{z_j = x_k}.
+\end{equation}
+Accordingly,
+\begin{equation}
+\begin{aligned}
+\sum_{i=1}^{p} \sum_{j=1}^{p} \alpha_{i} \alpha_{j} \mathbbm 1_{z_i = z_j} &= \sum_{i=1}^{p} \sum_{j=1}^{p} \sum_{k=1}^{n} \alpha_{i} \alpha_{j} \mathbbm 1_{z_i = x_k} \mathbbm 1_{z_j = x_k} \\
+ &= \sum_{k=1}^{n} \left( \sum_{i=1}^{p} \alpha_i \mathbbm 1_{z_i=x_k} \right)^2 \ge 0,
+\end{aligned}
+\end{equation}
+satisfying the PD condition.
+
+\newpage
+\item 
+Let $y=(y_1,\ldots,y_p)^T$, $p<n$, $y_i \in \mathbb{R}$, and $\lambda >0$. 
+Consider the following problem: 
+\begin{equation}
+\min_{f \in H}\left( \frac{1}{p}\sum_{j=1}^p (f(x_j)-y_j)^2 + \lambda||f||^2\right)
+\end{equation}
+where $H$ is the RKHS associated with the kernel in (\ref{eq:1}). Provide the solution $f^*$ of this problem as a function of $y$ and $\lambda$.  
+That is, provide $f(x_1),\ldots,f(x_n)$ as functions of $y$ and $\lambda$.
+
+The representer theorem permits the function, $f^*$, that minimizes the expression as,
+\begin{equation}
+f^*(x) = \sum_{i=1}^{p} \alpha^*_i K(x, x_i).
+\end{equation}
+Recognizing the optimization expression in the form as kernalized ridge regression, it is evident that,
+\begin{equation}
+\alpha^* = \left( K + \lambda p I \right)^{-1} y.
+\end{equation}
+In this case, we consider $x_i, ..., x_p$ as distinct, thus the only times $K(x_i, x_j) = 1$ only happens when $i=j$. Meaning, the matrix $K$, defined as
+\begin{equation}
+[K]_{ij} = K(x_i, x_j),
+\end{equation}
+yields,
+\begin{equation}
+[K]_{ij}=\left\{\begin{array}{ll}{0,} & {i \ne j} \\ {1,} & {i =  j}\end{array}\right.
+\end{equation}
+or, 
+\begin{equation}
+K = I.
+\end{equation}
+Next,
+\begin{equation}
+(I + \lambda p I)^{-1}y = (1 + \lambda p)^{-1}y = \frac{1}{1+\lambda p}y.
+\end{equation}
+Accordingly,
+\begin{equation}
+f^*(x)= \frac{1}{1+p \lambda} \sum_{j=1}^{p} y_j K(x, x_j).
+\end{equation}
+\newpage
+
+\item Provide the RKHS associated with the kernel $K$ in (\ref{eq:1}). Verify the reproducing property of the kernel.  
+\end{enumerate}
+A RKHS requires a Hilbert space, $\mathcal H$, endowed with an inner product $\langle . , . \rangle_{\mathcal H}$, along with an associated kernel function $K: \mathcal X \times \mathcal X \rightarrow \mathbb R$ and the following properties,
+\begin{enumerate}
+\item \[ \langle f, K(., x) \rangle_{\mathcal H}= f(x), f \in \mathcal H \]
+\item $K$ spans $\mathcal H$.
+\end{enumerate}
+
+The approach taken here is to guess and check. From the definition, it is known that
+\begin{equation}
+K(., x_j) \in \mathcal H, x_i \in \mathcal X.
+\end{equation}
+This function, $K(., x_j)$, can be defined as
+\begin{equation}
+k_{x_j}(x_i)=\left\{\begin{array}{ll}{0,} & {i \neq j} \\ {1,} & {i=j}\end{array}\right.,
+\end{equation}
+or,
+\begin{equation}
+k_{x_j} = \hat{e}_j,
+\end{equation}
+where $\hat{e}_j$ is a natural basis vector in $\mathbb R^n$, $j \le n$. To form a Hilbert space, $\hat{e}_1,  \hat{e}_2,..., \hat{e}_n$ spans the space $\mathbb R^n$. Thus, define $\mathcal H$ as
+\begin{equation}
+\mathcal H = \left\{ f_{\alpha} : f_{\alpha} = \alpha_1  \hat{e}_1 + \alpha_2  \hat{e}_2 + ... + \alpha_n  \hat{e}_n, \alpha_1, ..., \alpha_n \in \mathbb R, \hat{e}_1,...,\hat{e}_n \in \mathbb R^n \right\},
+\end{equation}
+endowed with the inner product,
+\begin{equation}
+\langle f_\alpha, f_\beta \rangle_{\mathcal H} = \alpha^T \beta.
+\end{equation}
+Importantly, implied from $K(.,x_i)$,
+\begin{equation}
+f_\alpha(x_i) = [f_\alpha]_i.
+\end{equation}
+Now, verify the reproducing property,
+\begin{equation}
+\begin{aligned}
+\langle f_\alpha, K(., x_j) \rangle_{\mathcal H}  &=\langle f_\alpha, f_{\hat{e}_j} \rangle \\
+&= \alpha^T {\hat{e}_j} \\
+&= \alpha_j \\
+&= f_\alpha (x_j).
+\end{aligned}
+\end{equation}
+
+
+\newpage
+\section{Least squares optimization with a first guess} 
+Let $K$ be a pd kernel over a set $\mathcal{X}$. Let $\mathcal{T}=\{(x_1,y_1),\ldots,(x_n,y_n)\}$ be given, with $x_i \in \mathcal{X}$ and $y_i \in \mathbb{R}$. Let $H$ be the RKHS with kernel $K$ and let $f_0 \in H$ and $\lambda>0$. We consider the following problem 
+\begin{equation}
+\label{eq:2}
+\min_{f \in H}\left( \frac{1}{n}\sum_{i=1}^n (f(x_i)-y_i)^2 + \lambda||f-f_0||^2\right)
+\end{equation}
+in words, we want to find an element $f^* \in H$, which fits the data in $\mathcal{T}$ and which is not too far away - for the norm of the RKHS H - to a first guess, $f_0 \in H$. 
+Provide an expression for $f^*$, the unique solution of (\ref{eq:2}). 
+
+Note that in its present form, $||f-f_0||$, is not strictly increasing. Consequently, the representer theorem cannot be applied directly to the presented expression. However, permitting the substitution, 
+\begin{equation}
+g = f - f_0,
+\end{equation}
+changes the optimization problem to
+\begin{equation}
+\min _{g \in H}\left(\frac{1}{n} \sum_{i=1}^{n}\left(g\left(x_{i}\right) + f_0-y_{i}\right)^{2}+\lambda\left\|g\right\|^{2}\right)
+\end{equation}
+The representer theorem, now, can be applied to $g$, meaning a solution $g^*$ that minimizes the expression can be written as
+\begin{equation}
+g^*(x) = \sum_{i=1}^{n} \alpha^*_i K(x_i, x).
+\end{equation}
+Next, permit the substitution $z=y-f_0$,
+\begin{equation}
+\min _{g \in H}\left(\frac{1}{n} \sum_{i=1}^{n}\left(g\left(x_{i}\right)-z_i\right)^{2}+\lambda\|g\|^{2}\right).
+\end{equation}
+This is recognized as kernalized ridge regression, meaning that
+\begin{equation}
+\alpha^* = (K+n\lambda I)^{-1} (y - f_0),
+\end{equation}
+where,
+\begin{equation}
+f^{*}(x)=\sum_{i=1}^{n} \alpha_{i}^{*} K\left(x_{i}, x\right) + f_0.
+\end{equation}
+
+\newpage
+\section*{Course Material}
+\begin{defn}{\textbf{Positive Definite Kernel}}
+A kernel $k : \mathcal X \times \mathcal X \rightarrow \mathbb R$ is said to be positive definite if for any sequence $a_1,a_2,...,a_m \in \mathbb R$ and $x_1, x_2,...,x_m \in \mathcal X$,
+\begin{equation}
+\sum_{i=1}^{m} \sum_{i=1}^{m} a_i a_j k(x_i, x_j) \ge 0.
+\end{equation}
+
+\label{def:pd}
+\end{defn}
+
+\begin{defn}{\textbf{Reproducing Kernel Hilbert Space}}
+Let $\mathcal X$ be a nonempty set and by $\mathcal H$ a Hilbert space of functions $f: \mathcal X \rightarrow \mathbb R$. Then $\mathcal H$ is called a reproducing kernel Hilbert space endowed with the inner product $\langle.,.\rangle$ if there exists $k: \mathcal X \times \mathcal X \rightarrow \mathbb R$ with the following properties.
+\begin{enumerate}
+\item $k$ has the property 
+\begin{equation}
+\langle f, k(x, .) \rangle = f(x), \forall f \in \mathcal H.
+\end{equation}
+\item $k$ spans $\mathcal H$.
+\end{enumerate}
+\end{defn}
+
+\begin{thm}{\textbf{Representer Theorem}} \label{thm:representer}
+Let $\mathcal X$ be a set endowed with a PD kernel $K$, $\mathcal H$ the corresponding RKHS, and $\mathcal{S}=\left\{\mathrm{x}_{1}, \cdots, \mathrm{x}_{n}\right\} \subseteq \mathcal{X}$ a finite set of points in $\mathcal X$. Let $\Psi: \mathbb{R}^{n+1} \rightarrow \mathbb{R}$ be a function of $n+1$ variables, strictly increasing with respect to the last variable.Then, any solution to the optimization problem,
+\begin{equation}
+\min _{f \in \mathcal{H}} \Psi\left(f\left(\mathbf{x}_{1}\right), \cdots, f\left(\mathbf{x}_{n}\right),\|f\|_{\mathcal{H}}\right),
+\end{equation}
+admits the form,
+\begin{equation}
+\forall \mathbf{x} \in \mathcal{X}, \quad f(\mathbf{x})=\sum_{i=1}^{n} \alpha_{i} K\left(\mathbf{x}_{i}, \mathbf{x}\right)=\sum_{i=1}^{n} \alpha_{i} K_{\mathbf{x}_{i}}(\mathbf{x}).
+\end{equation}
+In other words, the solution lives in the finite-dimensional subspace:
+\begin{equation}
+f \in \operatorname{Span}\left(K_{\mathrm{x}_{1}}, \ldots, K_{\mathrm{x}_{n}}\right).
+\end{equation}
+\end{thm}
+\newpage
+
+\end{document}
