@@ -10,6 +10,26 @@ from kkmeans import KKernelClustering, kernel_mat
 from graph import construct_graph
 
 class SpectralClustering(KKernelClustering):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # override the special kernel
+        self._kernel = np.dot
+
+    def train(self, X, w=None, **kwargs):
+        W, D, L = construct_graph(X, **kwargs)
+        W = (W[W > 1E-12]).astype(np.float32)
+        L = D - W
+        #self._L = L
+        #self._W = (W[W > 1E-10]).astype(np.float32)
+        #self._D = D
+        #Z = W @ np.diag(np.sqrt(np.diag(D)))
+        eD, eV = np.linalg.eig(L)
+        eidx = np.argsort(-eD)
+        Y = eV[:, eidx[:self._k]].T
+        return super(SpectralClustering, self).train(Y.T, w=w)
+
+
+class KSpectralClustering(KKernelClustering):
     def __init__(self, k, max_iter, kernel, **kwargs):
         # make kkmeans conventional k means by passing a linear kernel
         super().__init__(k, max_iter, np.dot, **kwargs)
@@ -33,7 +53,7 @@ class SpectralClustering(KKernelClustering):
         Z /= np.tile(np.linalg.norm(Z, axis=1), reps=(self._k, 1)).T
 
         # perform KRR on the rows
-        return super(SpectralClustering, self).train(Z, w=w)
+        return super(KSpectralClustering, self).train(Z, w=w)
 
 
 if __name__ == "__main__":
