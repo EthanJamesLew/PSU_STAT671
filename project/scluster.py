@@ -9,6 +9,8 @@ import numpy as np
 from kkmeans import KKernelClustering, kernel_mat
 from graph import construct_graph
 
+from sklearn.cluster import KMeans
+
 class SpectralClustering(KKernelClustering):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -17,7 +19,7 @@ class SpectralClustering(KKernelClustering):
 
     def train(self, X, w=None, **kwargs):
         W, D, L = construct_graph(X, **kwargs)
-        W = (W[W > 1E-12]).astype(np.float32)
+        #W = (W[W > 1E-12]).astype(np.float32)
         L = D - W
         #self._L = L
         #self._W = (W[W > 1E-10]).astype(np.float32)
@@ -26,6 +28,7 @@ class SpectralClustering(KKernelClustering):
         eD, eV = np.linalg.eig(L)
         eidx = np.argsort(-eD)
         Y = eV[:, eidx[:self._k]].T
+        #return KMeans(n_clusters=self._k, random_state=0).fit_predict(Y.T)
         return super(SpectralClustering, self).train(Y.T, w=w)
 
 
@@ -51,8 +54,9 @@ class KSpectralClustering(KKernelClustering):
 
         # normalize rows
         Z /= np.tile(np.linalg.norm(Z, axis=1), reps=(self._k, 1)).T
-
+        #return KMeans(n_clusters=self._k, random_state=0).fit_predict(Z)
         # perform KRR on the rows
+
         return super(KSpectralClustering, self).train(Z, w=w)
 
 

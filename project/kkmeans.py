@@ -7,6 +7,10 @@ Implements kernalized k-means
 
 import numpy as np
 from inspect import signature
+
+from sklearn.utils import check_random_state
+from sklearn.metrics.pairwise import pairwise_kernels
+
 #from kernel_kmeans import KernelKMeans
 
 from partition import random_euclid_partition, random_uniform_partition
@@ -22,6 +26,10 @@ def k_gaussian(x, xp, sigma):
 def k_tanh(x, xp, kappa, Theta):
     return np.tanh(kappa * np.dot(x, xp) + Theta)
 
+def kernel_mat_pair(f, x, y=None):
+    return pairwise_kernels(x, y, f)
+
+
 def kernel_mat(f, x):
     '''
     :param f: kernel function
@@ -29,15 +37,16 @@ def kernel_mat(f, x):
     :return: K symmetric matrix
     '''
     n = len(x)
-    K = np.zeros((n, n))
+    K = np.zeros((n, n), dtype=x.dtype)
     for i in range(0, n):
         for j in range(0, i+1):
             v = f(x[i], x[j])
             K[i, j] = v
             K[j, i] = v
     return K
+
 def kernalized_kmeans(X, k, kernel):
-    km = KKernelClustering(k, 100, kernel)
+    km = KKernelClustering(k, 100, kernel, dtype=np.complex)
     km.kernel = kernel
     km.train(X)
     return km.classify(X)
@@ -63,10 +72,13 @@ class KKernelClustering:
         M, N = X.shape
         w = w if w is not None else np.ones(M)
         self._w = w
-        K = kernel_mat(self._kernel, X)
+        K = kernel_mat_pair(self._kernel, X)
         self._labels = random_uniform_partition(X, self._k)
-        dist = np.zeros((M, self._k))
-        self.within_distances = np.zeros(M)
+        #rs = check_random_state(None)
+        #self._labels = rs.randint(self._k, size=M)
+
+        dist = np.zeros((M, self._k), dtype=X.dtype)
+        self.within_distances = np.zeros(self._k, dtype=X.dtype)
 
         for idx in range(self._max_iter):
             dist.fill(0)
@@ -75,7 +87,7 @@ class KKernelClustering:
             self._labels = dist.argmin(axis=1)
 
             n_crit = np.sum((self._labels - labels_prev) == 0)
-            if 1 - float(n_crit) / M < 1E-3:
+            if 1 - float(n_crit) / M < 1E-20:
                 break
         self._X = X
         return self._labels
@@ -95,12 +107,15 @@ class KKernelClustering:
                 dist[:, label] += within_dist[label]
             dist[:, label] -= 2 * np.sum(self._w[is_idx] * K[:, is_idx], axis=1) / denom
 
-    def classify(self, X):
+    def classify(self, X, thresh=True):
         M, N = X.shape
-        K = kernel_mat(self._kernel, X)
+        K = kernel_mat_pair(self._kernel, X, self._X)
         dist = np.zeros((M, self._k))
         self._get_dist(K, dist, self.within_distances, update=False)
-        return dist.argmin(axis=1)
+        if thresh is True:
+            return dist.argmin(axis=1)
+        else:
+            return  dist.min(axis=1)
 
 if __name__ == "__main__":
 
