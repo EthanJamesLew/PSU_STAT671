@@ -15,7 +15,7 @@ def random_uniform_partition(data, k):
     return membership[:M]
 
 
-def random_euclid_partition(data, k):
+def random_euclid_partition(data, k, centroids=None):
     ''' random_euclid_partition
     For pts belonging to some euclidean space of dimension N, partition in k clusters by using distance
     to randomly generated centroids
@@ -29,10 +29,11 @@ def random_euclid_partition(data, k):
     membership = np.zeros(M, dtype=np.int32)
 
     # generate centroids
-    bounds = np.array([[np.min(x), np.max(x)] for x in data.T])
-    ranges = np.abs(bounds[:, 0] - bounds[:, 1])
-    midpts = np.sum(bounds, axis=1)/2
-    centroids = (np.random.rand(k, N)-0.5)*np.tile(ranges, (k, 1)) + np.tile(midpts, (k, 1))
+    if centroids is None:
+        bounds = np.array([[np.min(x), np.max(x)] for x in data.T])
+        ranges = np.abs(bounds[:, 0] - bounds[:, 1])
+        midpts = np.sum(bounds, axis=1)/2
+        centroids = (np.random.rand(k, N)-0.5)*np.tile(ranges, (k, 1)) + np.tile(midpts, (k, 1))
 
     # get membership
     for idx, pt in enumerate(data):

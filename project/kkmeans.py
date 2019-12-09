@@ -7,13 +7,10 @@ Implements kernalized k-means
 
 import numpy as np
 from inspect import signature
-
-from sklearn.utils import check_random_state
 from sklearn.metrics.pairwise import pairwise_kernels
 
-#from kernel_kmeans import KernelKMeans
-
 from partition import random_euclid_partition, random_uniform_partition
+
 ##KERNELS
 def k_polynomial(x, xp, d):
     return (np.dot(x, xp)+1)**d
@@ -44,12 +41,6 @@ def kernel_mat(f, x):
             K[i, j] = v
             K[j, i] = v
     return K
-
-def kernalized_kmeans(X, k, kernel):
-    km = KKernelClustering(k, 100, kernel, dtype=np.complex)
-    km.kernel = kernel
-    km.train(X)
-    return km.classify(X)
 
 class KKernelClustering:
     def __init__(self, k, max_iter, kernel):
@@ -89,6 +80,8 @@ class KKernelClustering:
             n_crit = np.sum((self._labels - labels_prev) == 0)
             if 1 - float(n_crit) / M < 1E-20:
                 break
+        self._err = dist.min(axis=1)
+        self._wss = np.sum(self._err)
         self._X = X
         return self._labels
 
@@ -96,8 +89,10 @@ class KKernelClustering:
         for label in range(self._k):
             is_idx = self._labels == label
             if np.sum(is_idx) == 0:
-                raise ValueError("No Label")
-            denom = self._w[is_idx].sum()
+                denom = 1
+            else:
+                #raise ValueError("No Label")
+                denom = self._w[is_idx].sum()
             if update == True:
                 KK = K[is_idx][:, is_idx]
                 dist_label = np.sum(np.outer(self._w[is_idx], self._w[is_idx])*KK / (denom * denom))
@@ -106,6 +101,8 @@ class KKernelClustering:
             else:
                 dist[:, label] += within_dist[label]
             dist[:, label] -= 2 * np.sum(self._w[is_idx] * K[:, is_idx], axis=1) / denom
+        if update is True:
+            dist[:, :] += np.tile(np.diag(K), reps=(self._k, 1)).T
 
     def classify(self, X, thresh=True):
         M, N = X.shape
@@ -116,22 +113,4 @@ class KKernelClustering:
             return dist.argmin(axis=1)
         else:
             return  dist.min(axis=1)
-
-if __name__ == "__main__":
-
-    import matplotlib.pyplot as plt
-    M = 200
-    N = 2
-    k = 5
-    data = np.random.rand(M, N)*2 - 1
-    membership = kernalized_kmeans(data, k, lambda x, y: k_gaussian(x, y, .1))
-    plt.figure()
-    plt.scatter(*data[membership==0, :].T)
-    plt.scatter(*data[membership==1, :].T)
-    plt.scatter(*data[membership==2, :].T)
-    plt.scatter(*data[membership==3, :].T)
-    plt.scatter(*data[membership==4, :].T)
-    plt.show()
-
-
 

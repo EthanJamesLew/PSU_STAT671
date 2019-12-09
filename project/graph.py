@@ -14,7 +14,7 @@ def view_graph(ax, X, A, color=[0,0,0]):
     Given a graph with vertices at X and edge adjacency A, plot the results on ax
     '''
     M, N = X.shape
-    ax.scatter(*X.T, zorder=100)
+    ax.scatter(*X.T, zorder=100, s=2)
     ls = []
     alphas = []
     for idx, xi in enumerate(X):
@@ -24,9 +24,9 @@ def view_graph(ax, X, A, color=[0,0,0]):
                 alphas.append(A[idx, jdx])
     alphas = np.log(1/np.array(alphas)) + 0.1
     alphas /= np.max(alphas)
-    print(alphas)
+    #print(alphas)
     alphas = np.clip(alphas, 0.0, 1.0)
-    print(alphas)
+    #print(alphas)
     n_seg = len(ls)
     RGB = np.tile(color, reps=[n_seg, 1])
     RGBA = np.vstack((RGB.T, alphas)).T
@@ -84,7 +84,7 @@ def construct_graph(X, type="knn", param=None, **kwargs):
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
     X = np.random.rand(100, 2)
-    W, D, L = construct_graph(X, type='knn', param= 3)
+    W, D, L = construct_graph(X, type='knn', param= 10)
     fig, ax = plt.subplots()
     view_graph(ax, X, W)
     plt.show()
