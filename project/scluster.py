@@ -31,7 +31,7 @@ class SpectralClustering(KKernelClustering):
         W[W > 1E-50] = 1
         L = D - W
         eD, eV = np.linalg.eig(L)
-        eidx = np.argsort(-eD)
+        eidx = np.argsort(eD)
         Y = np.real(eV[:, eidx[:self._k]].T)
         return super(SpectralClustering, self).train(Y.T, w=w)
 

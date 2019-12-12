@@ -65,8 +65,6 @@ class KKernelClustering:
         self._w = w
         K = kernel_mat_pair(self._kernel, X)
         self._labels = random_uniform_partition(X, self._k)
-        #rs = check_random_state(None)
-        #self._labels = rs.randint(self._k, size=M)
 
         dist = np.zeros((M, self._k), dtype=X.dtype)
         self.within_distances = np.zeros(self._k, dtype=X.dtype)

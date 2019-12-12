@@ -26,7 +26,6 @@ def random_euclid_partition(data, k, centroids=None):
     '''
     # initialize dimensions, membership vectors
     M, N = data.shape
-    membership = np.zeros(M, dtype=np.int32)
 
     # generate centroids
     if centroids is None:
@@ -36,9 +35,15 @@ def random_euclid_partition(data, k, centroids=None):
         centroids = (np.random.rand(k, N)-0.5)*np.tile(ranges, (k, 1)) + np.tile(midpts, (k, 1))
 
     # get membership
+    return get_membership(data, centroids)
+
+def get_membership(data, centroids):
+    M, N = data.shape
+    k = centroids.shape[0]
+    membership = np.zeros(M, dtype=np.int32)
+    # get membership
     for idx, pt in enumerate(data):
         # generate (k x m) tiles of pt and get (k) norms
         dist = np.linalg.norm(np.tile(pt, (k, 1)) - centroids, axis=1)
         membership[idx] = np.argmin(dist)
     return membership
-
